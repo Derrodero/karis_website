@@ -1,0 +1,326 @@
+{% extends "clinic/base.html" %} {% load static %} {% block content %}
+<header class="page-heading">
+  <p class="eyebrow">KARIS MEDICAL · UGANDA</p>
+  <h1>{{ page.title }}</h1>
+  <p class="page-lede">{{ page.intro }}</p>
+</header>
+
+{% if page_key == "about" %}
+<figure class="page-photograph">
+  <img
+    src="{% static 'clinic/images/karis medical images/image.jpg' %}"
+    alt="Reception area with the Karis Medical emblem"
+    width="1776"
+    height="1296"
+    fetchpriority="high"
+  />
+</figure>
+<section class="about-overview" aria-labelledby="about-overview-title">
+  <h2 id="about-overview-title">Overview of Karis Medical</h2>
+  <p>{{ about.overview }}</p>
+  <p><strong>Established:</strong> {{ about.established }}</p>
+  <p class="about-slogan">{{ about.slogan }}</p>
+  <p class="about-supporting-line">{{ about.supporting_line }}</p>
+</section>
+
+<div class="about-grid">
+  <section class="about-section" aria-labelledby="mission-title">
+    <p class="eyebrow">OUR PURPOSE</p>
+    <h2 id="mission-title">Mission, vision and values</h2>
+    <dl class="purpose-list">
+      <div>
+        <dt>Mission</dt>
+        <dd>{{ about.mission }}</dd>
+      </div>
+      <div>
+        <dt>Vision</dt>
+        <dd>{{ about.vision }}</dd>
+      </div>
+    </dl>
+    <h3>Core values</h3>
+    <ul class="values-list">
+      {% for value in about.values %}
+      <li>{{ value }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="about-section" aria-labelledby="history-title">
+    <p class="eyebrow">OUR STORY</p>
+    <h2 id="history-title">History and background</h2>
+    <p>{{ about.history }}</p>
+    <ol class="milestone-list">
+      {% for milestone in about.milestones %}
+      <li><strong>{{ milestone.date }}</strong> {{ milestone.event }}</li>
+      {% endfor %}
+    </ol>
+    <p class="verification-copy">{{ about.milestone_note }}</p>
+    <p class="verification-copy">{{ about.impact_note }}</p>
+  </section>
+
+  <section class="about-section" aria-labelledby="facilities-title">
+    <p class="eyebrow">CARE AT KARIS</p>
+    <h2 id="facilities-title">Facilities and services</h2>
+    <ul class="facility-list">
+      {% for facility in about.facilities %}
+      <li>{{ facility }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="about-section" aria-labelledby="team-title">
+    <p class="eyebrow">PEOPLE AND EXPERTISE</p>
+    <h2 id="team-title">Medical team and leadership</h2>
+    <p class="verification-copy">
+      Staff names, qualifications, and credentials will be published after the
+      clinic verifies and authorizes each profile.
+    </p>
+    <ul class="team-list">
+      {% for role in about.team_roles %}
+      <li><strong>{{ role.title }}</strong><span>{{ role.detail }}</span></li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section
+    class="about-section about-section-wide"
+    aria-labelledby="outreach-title"
+  >
+    <p class="eyebrow">COMMUNITY</p>
+    <h2 id="outreach-title">Community outreach and social responsibility</h2>
+    <ul class="outreach-list">
+      {% for programme in about.outreach %}
+      <li>{{ programme }}</li>
+      {% endfor %}
+    </ul>
+    <p class="verification-copy">{{ about.outreach_note }}</p>
+  </section>
+</div>
+{% endif %} {% if page_key == "services" %}
+<section class="care-feature" aria-labelledby="family-care-title">
+  <div>
+    <p class="eyebrow">CARE CLOSE TO HOME</p>
+    <h2 id="family-care-title">For you.<br />For your family.</h2>
+    <p>
+      Explore our services below, from general consultations and diagnostics to
+      maternity and child health.
+    </p>
+    <a class="text-link" href="{% url 'contact' %}"
+      >Discuss your visit <i class="bi bi-arrow-right" aria-hidden="true"></i
+    ></a>
+  </div>
+  <img
+    src="{% static 'clinic/images/karis medical images/pediatrician-doctor.jpg' %}"
+    alt="A mother and child talking with a doctor"
+    width="626"
+    height="423"
+    fetchpriority="high"
+  />
+</section>
+<nav class="services-section-nav" aria-label="Services page sections">
+  <a href="#confirmed-services">
+    <span class="services-nav-index">01</span>
+    <span>Confirmed services</span>
+    <i class="bi bi-arrow-down" aria-hidden="true"></i>
+  </a>
+  <a href="#service-booking">
+    <span class="services-nav-index">02</span>
+    <span>Book a visit</span>
+    <i class="bi bi-arrow-down" aria-hidden="true"></i>
+  </a>
+  <a href="#services-to-confirm">
+    <span class="services-nav-index">03</span>
+    <span>Other care areas</span>
+    <i class="bi bi-arrow-down" aria-hidden="true"></i>
+  </a>
+</nav>
+{% endif %} {% if page_key == "contact" %}
+<section class="contact-directory" aria-labelledby="contact-branches-title">
+  <header class="contact-directory-heading">
+    <div>
+      <p class="eyebrow">VISIT OR CALL</p>
+      <h2 id="contact-branches-title">Karis Medical branches</h2>
+      <p>Choose the location most convenient for your visit.</p>
+    </div>
+    <p class="hours-line">
+      <i class="bi bi-clock" aria-hidden="true"></i> {{ opening_hours }}
+    </p>
+  </header>
+  <div class="branch-grid branch-grid--contact">
+    {% for branch in branches %}
+    <article class="branch-card">
+      <p class="branch-label">
+        <i class="bi bi-geo-alt" aria-hidden="true"></i> {{ branch.name }}
+      </p>
+      <h3>{{ branch.name }}</h3>
+      <address>{{ branch.address }}</address>
+      <div class="branch-actions">
+        <a class="branch-phone" href="{{ branch.tel }}">
+          <i class="bi bi-telephone" aria-hidden="true"></i>
+          <span>Call {{ branch.phone }}</span>
+        </a>
+        <a class="branch-phone" href="{{ facts.mailto }}">
+          <i class="bi bi-envelope" aria-hidden="true"></i>
+          <span>{{ facts.email }}</span>
+        </a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  <p class="contact-policy">
+    <i class="bi bi-info-circle" aria-hidden="true"></i> {{ page.notice }}
+  </p>
+</section>
+{% else %}
+<section
+  class="details-layout{% if page_key == 'services' %} details-layout--services{% endif %}"
+  aria-labelledby="details-title"
+  data-page="{{ page_key }}"
+  {%
+  if
+  page_key=""
+  ="services"
+  %}id="confirmed-services"
+  {%
+  endif
+  %}
+>
+  <div class="details-copy">
+    {% if page_key == "services" %}
+    <p class="eyebrow">CARE AT KARIS</p>
+    {% endif %}
+    <h2 id="details-title">{{ page.section_title }}</h2>
+    {% if page_key == "services" %}
+    <p class="services-directory-lede">
+      Browse services currently listed by Karis Medical. Choose “Book visit” to
+      start a booking for that service.
+    </p>
+    {% endif %} {% if page_key == "services" %} {% if service_categories %}
+    <div class="service-directory">
+      {% for category in service_categories %}
+      <details class="service-accordion" {% if forloop.first %}open{% endif %}>
+        <summary>
+          <span class="service-category-name">{{ category.title }}</span>
+          <span class="service-category-count"
+            >{{ category.services|length }} services</span
+          >
+        </summary>
+        <ul>
+          {% for service in category.services %}
+          <li>
+            <div class="service-item-row">
+              <div>
+                <strong>{{ service.name }}</strong>
+                {% if service.description %}
+                <p>{{ service.description }}</p>
+                {% endif %}
+              </div>
+              <a
+                class="service-book-trigger"
+                href="#service-booking"
+                data-select-service="{{ service.pk }}"
+              >
+                <i class="bi bi-calendar2-check" aria-hidden="true"></i>
+                Book visit
+              </a>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </details>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p>{{ page.notice }}</p>
+    {% endif %} {% else %}
+    <p>{{ page.notice }}</p>
+    {% endif %} {% if page_key == "privacy" %}
+    <p>
+      The display theme preference, if changed, is stored in this browser and is
+      not sent to the site.
+    </p>
+    <p>{{ appointment_privacy }}</p>
+    {% endif %} {% if show_branches %}
+    <h3 class="branch-section-title">Karis Medical branches</h3>
+    <p class="hours-line">{{ opening_hours }}</p>
+    <div class="branch-grid">
+      {% for branch in branches %}
+      <article class="branch-card">
+        <h4>{{ branch.name }}</h4>
+        <address>{{ branch.address }}</address>
+        <a class="branch-phone" href="{{ branch.tel }}">{{ branch.phone }}</a>
+      </article>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% if page_key != "services" %}
+  <aside class="pending-panel" aria-labelledby="pending-title">
+    <p class="pending-label">Awaiting confirmation</p>
+    <h2 id="pending-title">Not published yet</h2>
+    <ul>
+      {% for item in page.unpublished %}
+      <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </aside>
+  {% endif %}
+</section>
+{% endif %} {% if page_key == "services" %}
+<section
+  class="services-booking-wrapper"
+  id="service-booking-section"
+  aria-label="Book a service appointment"
+>
+  {% include "clinic/_booking_section.html" %}
+</section>
+<section
+  class="service-reference"
+  id="services-to-confirm"
+  aria-labelledby="service-reference-title"
+>
+  <header class="service-reference-heading">
+    <p class="eyebrow">ADDITIONAL CARE AREAS</p>
+    <h2 id="service-reference-title">Services to confirm with Karis</h2>
+    <p>{{ service_reference_note }}</p>
+  </header>
+  <div class="service-reference-grid">
+    {% for group in service_reference %}
+    <details
+      class="service-reference-group"
+      {%
+      if
+      forloop.first
+      %}open{%
+      endif
+      %}
+    >
+      <summary>{{ group.title }}</summary>
+      <ul>
+        {% for item in group.items %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    </details>
+    {% endfor %}
+  </div>
+</section>
+{% endif %} {% if page_key == "contact" %}
+<figure class="page-photograph page-photograph--reception">
+  <img
+    src="{% static 'clinic/images/karis medical images/Welcoming Medical Clinic Reception and Consultation.png' %}"
+    alt="A consultation in a welcoming reception area"
+    width="1445"
+    height="1088"
+    loading="lazy"
+  />
+</figure>
+{% endif %}
+
+<nav class="page-return" aria-label="Related pages">
+  <a href="{% url 'home' %}">Return to home</a>
+  {% if page_key != "contact" %}<a href="{% url 'contact' %}"
+    >Contact information</a
+  >{% endif %}
+</nav>
+{% endblock %}

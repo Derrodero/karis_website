@@ -1,0 +1,156 @@
+{% extends "clinic/base.html" %} {% load static %} {% block content %}
+<section
+  class="home-hero home-hero--slideshow"
+  aria-labelledby="home-title"
+  data-home-slideshow
+>
+  <div class="hero-backdrop" aria-hidden="true">
+    <img
+      class="hero-slide is-active"
+      data-home-slide
+      src="{% static 'clinic/images/karis medical images/5ce80a1d-b099-41ce-adb3-3cd18e7cf968.png' %}"
+      alt=""
+      fetchpriority="high"
+    />
+    <img
+      class="hero-slide"
+      data-home-slide
+      src="{% static 'clinic/images/karis medical images/smiling-black-doctor-patient_605022-76344.jpg' %}"
+      alt=""
+      loading="lazy"
+    />
+    <div class="hero-scrim"></div>
+  </div>
+  <div class="hero-copy">
+    <p class="eyebrow">
+      <span aria-hidden="true"></span> KARIS MEDICAL · KAMPALA
+    </p>
+    <h1 id="home-title" class="hero-welcome">
+      <span class="hero-highlight">Welcome to Karis Medical.</span>
+    </h1>
+    <p class="hero-lede">
+      Visit either our Kyanja branch or Naalya branch, open every day, around
+      the clock.
+    </p>
+    <div class="hero-actions">
+      <a class="button-primary" href="{% url 'appointments' %}"
+        >{{ appointment_cta }}</a
+      >
+      <a class="button-secondary" href="{% url 'contact' %}">Find a branch</a>
+    </div>
+  </div>
+</section>
+<script src="{% static 'clinic/js/home-slider.js' %}" defer></script>
+
+<section class="patient-shortcuts" aria-label="Plan your care">
+  <a href="{% url 'services' %}"
+    ><i class="bi bi-heart-pulse" aria-hidden="true"></i
+    ><span>Explore our services</span
+    ><i class="bi bi-arrow-right" aria-hidden="true"></i
+  ></a>
+  <a href="{% url 'contact' %}"
+    ><i class="bi bi-geo-alt" aria-hidden="true"></i><span>Find a branch</span
+    ><i class="bi bi-arrow-right" aria-hidden="true"></i
+  ></a>
+  <a href="{% url 'appointments' %}"
+    ><i class="bi bi-calendar2-check" aria-hidden="true"></i
+    ><span>{{ appointment_cta }}</span
+    ><i class="bi bi-arrow-right" aria-hidden="true"></i
+  ></a>
+</section>
+
+<section class="editorial-feature" aria-labelledby="care-title">
+  <figure class="feature-image">
+    <img
+      src="{% static 'clinic/images/karis medical images/smiling-black-doctor-patient_605022-76344.jpg' %}"
+      alt="A doctor speaking with a patient"
+      loading="lazy"
+      width="640"
+      height="720"
+    />
+  </figure>
+  <div class="feature-copy">
+    <p class="eyebrow">BEYOND CARE</p>
+    <h2 id="care-title">Compassionate care.<br />A healthier community.</h2>
+    <p>
+      From everyday consultations to care for growing families, Karis Medical
+      brings health services closer to our community in Kampala.
+    </p>
+    <p>
+      Established in April 2025, we are guided by compassion, professionalism,
+      and respect for every patient.
+    </p>
+    <a class="text-link" href="{% url 'about' %}"
+      >Get to know Karis <i class="bi bi-arrow-right" aria-hidden="true"></i
+    ></a>
+  </div>
+</section>
+
+<section class="information-section" aria-labelledby="information-title">
+  <div class="section-heading">
+    <p class="eyebrow">HERE FOR YOUR HEALTH</p>
+    <h2 id="information-title">Care for every day of life</h2>
+  </div>
+  <div class="information-grid">
+    <article class="information-item">
+      <i class="bi bi-clipboard2-pulse service-icon" aria-hidden="true"></i>
+      <h3>Consultations &amp; outpatient care</h3>
+      <p>
+        General practice and outpatient services, with laboratory diagnostics
+        and pharmacy support.
+      </p>
+      <a href="{% url 'services' %}"
+        >Explore services <span aria-hidden="true">&rarr;</span></a
+      >
+    </article>
+    <article class="information-item">
+      <i class="bi bi-heart service-icon" aria-hidden="true"></i>
+      <h3>Maternity &amp; child health</h3>
+      <p>
+        Health services for mothers and children. Contact a branch to discuss
+        the care you need.
+      </p>
+      <a href="{% url 'services' %}"
+        >Service information <span aria-hidden="true">&rarr;</span></a
+      >
+    </article>
+    <article class="information-item">
+      <i class="bi bi-clock service-icon" aria-hidden="true"></i>
+      <h3>Here around the clock</h3>
+      <p>Two Kampala branches are open 24 hours, Monday to Sunday.</p>
+      <a href="{% url 'contact' %}"
+        >Branch details <span aria-hidden="true">&rarr;</span></a
+      >
+    </article>
+  </div>
+</section>
+
+<section class="branches-section" aria-labelledby="branches-title">
+  <div class="section-heading">
+    <p class="eyebrow">VISIT KARIS MEDICAL</p>
+    <h2 id="branches-title">Our branches</h2>
+    <p class="hours-line">{{ opening_hours }}</p>
+  </div>
+  <div class="branch-grid">
+    {% for branch in branches %}
+    <article class="branch-card">
+      <p class="item-index">KAMPALA · UGANDA</p>
+      <h3>{{ branch.name }}</h3>
+      <address>{{ branch.address }}</address>
+      <a class="branch-phone" href="{{ branch.tel }}">{{ branch.phone }}</a>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="visit-banner" aria-labelledby="visit-title">
+  <div>
+    <p class="eyebrow">LET'S CONNECT</p>
+    <h2 id="visit-title">Your next step to care.</h2>
+    <p>Speak with our Kyanja or Naalya branch about your visit.</p>
+  </div>
+  <a class="button-primary" href="{% url 'contact' %}"
+    >Contact a branch <i class="bi bi-arrow-right" aria-hidden="true"></i
+  ></a>
+</section>
+{% endblock %}

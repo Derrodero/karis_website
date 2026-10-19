@@ -1,0 +1,50 @@
+{% extends "clinic/base.html" %}
+{% block content %}
+<header class="page-heading">
+  <p class="eyebrow">KARIS MEDICAL · STAFF PORTAL</p>
+  <h1>Staff Sign In</h1>
+  <p class="page-lede">
+    Sign in to manage patient appointments, schedules, and clinic services.
+  </p>
+</header>
+
+<section class="staff-auth-section" aria-labelledby="staff-login-title">
+  <form class="booking-form staff-login-form" method="post">
+    {% csrf_token %}
+    <div class="booking-form-heading">
+      <p class="eyebrow">AUTHORIZED ACCESS</p>
+      <h2 id="staff-login-title">Staff credentials</h2>
+    </div>
+    {% if error_message %}
+    <div class="booking-error-summary" role="alert">
+      <p>{{ error_message }}</p>
+    </div>
+    {% endif %}
+    <div class="booking-field">
+      <label for="id_username">Username</label>
+      <input
+        id="id_username"
+        name="username"
+        type="text"
+        autocomplete="username"
+        required
+        autofocus
+      />
+    </div>
+    <div class="booking-field">
+      <label for="id_password">Password</label>
+      <input
+        id="id_password"
+        name="password"
+        type="password"
+        autocomplete="current-password"
+        required
+      />
+    </div>
+    <button class="button-primary" type="submit">
+      <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+      Sign in to dashboard
+    </button>
+  </form>
+</section>
+{% endblock %}

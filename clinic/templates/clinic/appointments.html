@@ -1,0 +1,48 @@
+{% extends "clinic/base.html" %} {% load static %} {% block content %}
+<header class="page-heading">
+  <p class="eyebrow">KARIS MEDICAL · UGANDA</p>
+  <h1>Appointments</h1>
+  <p class="page-lede">
+    Choose a clinic-approved service and an available time. A confirmed booking
+    is sent to you and the clinic by email.
+  </p>
+</header>
+
+{% include "clinic/_booking_section.html" %}
+<section
+  class="appointment-support"
+  aria-labelledby="appointment-support-title"
+>
+  <img
+    src="{% static 'clinic/images/karis medical images/hand_save.jpg' %}"
+    alt="A healthcare professional offering a reassuring hand"
+    width="696"
+    height="464"
+    loading="lazy"
+  />
+  <div>
+    <p class="eyebrow">BRANCH SUPPORT</p>
+    <h2 id="appointment-support-title">Prefer to speak with us?</h2>
+    <p>
+      Call either branch for help with services, appointment times, or planning
+      your visit. {{ opening_hours }}.
+    </p>
+    <div class="appointment-support-contacts">
+      {% for branch in branches %}
+      <a href="{{ branch.tel }}">
+        <span>{{ branch.name }}</span>
+        <strong>{{ branch.phone }}</strong>
+      </a>
+      {% endfor %}
+      <a href="{{ facts.mailto }}">
+        <span>Email</span>
+        <strong>{{ facts.email }}</strong>
+      </a>
+    </div>
+    <a class="text-link" href="{% url 'contact' %}"
+      >Branch contact details
+      <i class="bi bi-arrow-right" aria-hidden="true"></i
+    ></a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,304 @@
+{% extends "clinic/base.html" %}
+{% block content %}
+<header class="page-heading staff-dashboard-header">
+  <div>
+    <p class="eyebrow">KARIS MEDICAL · STAFF PORTAL</p>
+    <h1>Appointment &amp; Schedule Dashboard</h1>
+    <p class="page-lede">
+      Manage booked patient visits, open appointment slots, and active clinic services.
+    </p>
+  </div>
+  <div class="staff-header-actions">
+    <a class="button-secondary" href="{% url 'appointments' %}">
+      <i class="bi bi-calendar2-check" aria-hidden="true"></i>
+      View Booking Form
+    </a>
+    <a class="button-secondary" href="/staff/">
+      <i class="bi bi-sliders" aria-hidden="true"></i>
+      Django Admin
+    </a>
+    <form method="post" action="{% url 'staff_logout' %}">
+      {% csrf_token %}
+      <button class="button-secondary" type="submit">
+        <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+        Sign out ({{ request.user.username }})
+      </button>
+    </form>
+  </div>
+</header>
+
+{% if messages %}
+<div class="staff-messages" aria-live="polite">
+  {% for message in messages %}
+  <div class="staff-alert staff-alert--{{ message.tags|default:'info' }}">
+    <i class="bi bi-check-circle" aria-hidden="true"></i>
+    <span>{{ message }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<section class="staff-metrics" aria-label="Appointment statistics">
+  <article class="staff-metric-card">
+    <span class="staff-metric-label">Upcoming Confirmed</span>
+    <strong class="staff-metric-value">{{ stats.upcoming_confirmed }}</strong>
+    <span class="staff-metric-sub">{{ stats.total_confirmed }} total confirmed</span>
+  </article>
+  <article class="staff-metric-card">
+    <span class="staff-metric-label">Open Bookable Slots</span>
+    <strong class="staff-metric-value">{{ stats.open_slots }}</strong>
+    <span class="staff-metric-sub">Available for patients</span>
+  </article>
+  <article class="staff-metric-card">
+    <span class="staff-metric-label">Cancelled Bookings</span>
+    <strong class="staff-metric-value">{{ stats.total_cancelled }}</strong>
+    <span class="staff-metric-sub">Released back to schedule</span>
+  </article>
+</section>
+
+<section class="staff-panel" aria-labelledby="appointments-table-title">
+  <div class="staff-panel-header">
+    <div>
+      <p class="eyebrow">PATIENT BOOKINGS</p>
+      <h2 id="appointments-table-title">Scheduled Appointments</h2>
+    </div>
+    <form class="staff-filter-bar" method="get">
+      <input
+        type="search"
+        name="q"
+        value="{{ search_query }}"
+        placeholder="Search name, phone, email, reference..."
+        aria-label="Search appointments"
+      />
+      <select name="service" aria-label="Filter by service">
+        <option value="">All services</option>
+        {% for svc in services %}
+        <option value="{{ svc.pk }}" {% if service_filter == svc.pk|stringformat:"s" %}selected{% endif %}>
+          {{ svc.name }}
+        </option>
+        {% endfor %}
+      </select>
+      <select name="status" aria-label="Filter by status">
+        <option value="all" {% if status_filter == "all" %}selected{% endif %}>All statuses</option>
+        <option value="confirmed" {% if status_filter == "confirmed" %}selected{% endif %}>Confirmed</option>
+        <option value="cancelled" {% if status_filter == "cancelled" %}selected{% endif %}>Cancelled</option>
+      </select>
+      <button class="button-primary" type="submit">Filter</button>
+    </form>
+  </div>
+
+  {% if appointments %}
+  <div class="staff-table-wrap">
+    <table class="staff-table">
+      <thead>
+        <tr>
+          <th>Date &amp; Time</th>
+          <th>Patient</th>
+          <th>Contact</th>
+          <th>Service</th>
+          <th>Reference</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appt in appointments %}
+        <tr>
+          <td><strong>{{ appt.slot.display_time }}</strong></td>
+          <td>{{ appt.full_name }}</td>
+          <td>
+            <a href="tel:{{ appt.phone }}">{{ appt.phone }}</a><br />
+            <a href="mailto:{{ appt.email }}">{{ appt.email }}</a>
+          </td>
+          <td>{{ appt.slot.service.name }}</td>
+          <td><code>{{ appt.reference|truncatechars:12 }}</code></td>
+          <td>
+            <span class="status-badge status-badge--{{ appt.status }}">
+              {{ appt.get_status_display }}
+            </span>
+          </td>
+          <td>
+            <form method="post" action="{% url 'staff_appointment_status' appt.pk %}">
+              {% csrf_token %}
+              {% if appt.status == "confirmed" %}
+              <input type="hidden" name="status" value="cancelled" />
+              <button class="staff-btn staff-btn--danger" type="submit">Cancel</button>
+              {% else %}
+              <input type="hidden" name="status" value="confirmed" />
+              <button class="staff-btn" type="submit">Restore</button>
+              {% endif %}
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="staff-empty">No appointments match the current filter.</p>
+  {% endif %}
+</section>
+
+<div class="staff-grid-2">
+  <section class="staff-panel" aria-labelledby="add-slot-title">
+    <p class="eyebrow">SINGLE SLOT</p>
+    <h2 id="add-slot-title">Add Appointment Slot</h2>
+    <form class="staff-form" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="create_slot" />
+      <div class="booking-field">
+        <label for="{{ slot_form.service.id_for_label }}">{{ slot_form.service.label }}</label>
+        {{ slot_form.service }} {{ slot_form.service.errors }}
+      </div>
+      <div class="staff-form-row">
+        <div class="booking-field">
+          <label for="{{ slot_form.date.id_for_label }}">{{ slot_form.date.label }}</label>
+          {{ slot_form.date }} {{ slot_form.date.errors }}
+        </div>
+        <div class="booking-field">
+          <label for="{{ slot_form.start_time.id_for_label }}">{{ slot_form.start_time.label }}</label>
+          {{ slot_form.start_time }} {{ slot_form.start_time.errors }}
+        </div>
+        <div class="booking-field">
+          <label for="{{ slot_form.duration_minutes.id_for_label }}">{{ slot_form.duration_minutes.label }}</label>
+          {{ slot_form.duration_minutes }} {{ slot_form.duration_minutes.errors }}
+        </div>
+      </div>
+      <button class="button-primary" type="submit">
+        <i class="bi bi-plus-circle" aria-hidden="true"></i>
+        Add Slot
+      </button>
+    </form>
+  </section>
+
+  <section class="staff-panel" aria-labelledby="bulk-slot-title">
+    <p class="eyebrow">SCHEDULE GENERATOR</p>
+    <h2 id="bulk-slot-title">Generate Upcoming Slots</h2>
+    <form class="staff-form" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="bulk_generate" />
+      <div class="booking-field">
+        <label>{{ bulk_form.services.label }}</label>
+        <div class="staff-checkbox-list">
+          {{ bulk_form.services }}
+        </div>
+        {{ bulk_form.services.errors }}
+      </div>
+      <div class="staff-form-row">
+        <div class="booking-field">
+          <label for="{{ bulk_form.start_date.id_for_label }}">{{ bulk_form.start_date.label }}</label>
+          {{ bulk_form.start_date }} {{ bulk_form.start_date.errors }}
+        </div>
+        <div class="booking-field">
+          <label for="{{ bulk_form.days.id_for_label }}">{{ bulk_form.days.label }}</label>
+          {{ bulk_form.days }} {{ bulk_form.days.errors }}
+        </div>
+        <div class="booking-field">
+          <label for="{{ bulk_form.duration_minutes.id_for_label }}">{{ bulk_form.duration_minutes.label }}</label>
+          {{ bulk_form.duration_minutes }} {{ bulk_form.duration_minutes.errors }}
+        </div>
+      </div>
+      <div class="staff-form-row">
+        <div class="booking-field">
+          <label for="{{ bulk_form.day_start.id_for_label }}">{{ bulk_form.day_start.label }}</label>
+          {{ bulk_form.day_start }} {{ bulk_form.day_start.errors }}
+        </div>
+        <div class="booking-field">
+          <label for="{{ bulk_form.day_end.id_for_label }}">{{ bulk_form.day_end.label }}</label>
+          {{ bulk_form.day_end }} {{ bulk_form.day_end.errors }}
+        </div>
+      </div>
+      <button class="button-primary" type="submit">
+        <i class="bi bi-calendar-plus" aria-hidden="true"></i>
+        Generate Schedule
+      </button>
+    </form>
+  </section>
+</div>
+
+<div class="staff-grid-2">
+  <section class="staff-panel" aria-labelledby="slots-list-title">
+    <p class="eyebrow">AVAILABILITY</p>
+    <h2 id="slots-list-title">Upcoming Slots (Next 60)</h2>
+    {% if upcoming_slots %}
+    <div class="staff-table-wrap">
+      <table class="staff-table">
+        <thead>
+          <tr>
+            <th>Service</th>
+            <th>Start Time</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for slot in upcoming_slots %}
+          <tr>
+            <td>{{ slot.service.name }}</td>
+            <td>{{ slot.display_time }}</td>
+            <td>
+              {% if slot.confirmed_count > 0 %}
+              <span class="status-badge status-badge--confirmed">Booked</span>
+              {% elif slot.is_active %}
+              <span class="status-badge status-badge--open">Open</span>
+              {% else %}
+              <span class="status-badge status-badge--cancelled">Paused</span>
+              {% endif %}
+            </td>
+            <td>
+              <form method="post" action="{% url 'staff_slot_toggle' slot.pk %}">
+                {% csrf_token %}
+                <button class="staff-btn" type="submit">
+                  {% if slot.is_active %}Pause{% else %}Enable{% endif %}
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="staff-empty">No upcoming slots scheduled yet.</p>
+    {% endif %}
+  </section>
+
+  <section class="staff-panel" aria-labelledby="services-list-title">
+    <p class="eyebrow">CLINIC SERVICES</p>
+    <h2 id="services-list-title">Bookable Services</h2>
+    <div class="staff-table-wrap">
+      <table class="staff-table">
+        <thead>
+          <tr>
+            <th>Service Name</th>
+            <th>Visibility</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for svc in services %}
+          <tr>
+            <td><strong>{{ svc.name }}</strong></td>
+            <td>
+              {% if svc.is_active %}
+              <span class="status-badge status-badge--open">Active</span>
+              {% else %}
+              <span class="status-badge status-badge--cancelled">Hidden</span>
+              {% endif %}
+            </td>
+            <td>
+              <form method="post" action="{% url 'staff_service_toggle' svc.pk %}">
+                {% csrf_token %}
+                <button class="staff-btn" type="submit">
+                  {% if svc.is_active %}Deactivate{% else %}Activate{% endif %}
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}
