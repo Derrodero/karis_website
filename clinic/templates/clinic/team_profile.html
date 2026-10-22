@@ -1,0 +1,37 @@
+{% extends "clinic/base.html" %}
+{% block content %}
+<header class="page-heading">
+  <p class="eyebrow">FOUNDER AND EXECUTIVE TEAM</p>
+  <h1>{{ team_member.name }}</h1>
+  <p class="page-lede">{{ team_member.position }}</p>
+</header>
+
+<section class="team-profile-panel" aria-label="Team member profile">
+  <div
+    class="staff-photo-placeholder staff-photo-placeholder--profile"
+    role="img"
+    aria-label="Photo pending verification"
+  >
+    <i class="bi bi-person" aria-hidden="true"></i>
+    <span>Photo pending confirmation</span>
+  </div>
+  <div>
+    <p class="eyebrow">POSITION</p>
+    <h2>{{ team_member.position }}</h2>
+    <p>{{ team_member.description }}</p>
+    <p class="verification-copy">
+      Qualifications and additional profile information will be added after
+      verification by Karis Medical.
+    </p>
+    <div class="team-member-actions">
+      <a class="button-primary" href="{% url 'appointments' %}#service-booking">
+        <i class="bi bi-calendar2-check" aria-hidden="true"></i>
+        Request appointment
+      </a>
+      <a class="button-secondary" href="{% url 'about_detail' 'medical-team' %}">
+        Back to executive team
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -105,11 +105,11 @@ EMAIL_TIMEOUT = 10
 DEFAULT_FROM_EMAIL = (
     os.environ.get("DEFAULT_FROM_EMAIL", "").strip()
     or EMAIL_HOST_USER
-    or "care@karismedical.org"
+    or "help@karisclinic.com"
 )
 APPOINTMENT_NOTIFICATION_EMAIL = (
     os.environ.get("APPOINTMENT_NOTIFICATION_EMAIL", "").strip()
-    or "care@karismedical.org"
+    or "help@karisclinic.com"
 )
 EMAIL_CONFIGURED = all((EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD))
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", "").strip() or (

@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta
 import logging
+from datetime import datetime, time, timedelta
 
 from django.conf import settings
 from django.contrib import messages
@@ -8,21 +8,33 @@ from django.contrib.auth.decorators import user_passes_test
 from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
 from django.db.models import Count, Q
-from django.http import HttpRequest, HttpResponse
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from clinic.content import (
     ABOUT_PROFILE,
     BRANCHES,
+    DOCTOR_PROFILES,
+    EXECUTIVE_TEAM,
+    FOUNDER,
+    INSURERS,
     OPENING_HOURS,
     PAGES,
     PUBLIC_FACTS,
+    SERVICE_GROUPS,
     SERVICE_REFERENCE,
     SERVICE_REFERENCE_NOTE,
+    SPECIALTY_FILTERS,
 )
-from clinic.forms import AppointmentForm, StaffBulkSlotForm, StaffSlotForm
+from clinic.forms import (
+    APPOINTMENT_TIMES,
+    AppointmentForm,
+    StaffBulkSlotForm,
+    StaffSlotForm,
+)
 from clinic.models import Appointment, AppointmentSlot, Service
 
 logger = logging.getLogger(__name__)
@@ -83,6 +95,103 @@ def about(request: HttpRequest) -> HttpResponse:
     )
 
 
+def about_detail(request: HttpRequest, slug: str) -> HttpResponse:
+    team_member = next(
+        (
+            member
+            for member in [FOUNDER, *EXECUTIVE_TEAM]
+            if member["slug"] == slug
+        ),
+        None,
+    )
+    if team_member is not None:
+        return render(
+            request,
+            "clinic/team_profile.html",
+            {
+                "page_title": f"{team_member['name']} | Karis Medical",
+                "facts": PUBLIC_FACTS,
+                "team_member": team_member,
+            },
+        )
+
+    detail_pages = [
+        *ABOUT_PROFILE["team_roles"],
+        ABOUT_PROFILE["future_development"],
+    ]
+    detail = next((item for item in detail_pages if item["slug"] == slug), None)
+    if detail is None:
+        raise Http404("About detail page not found.")
+
+    if detail["slug"] == "medical-team":
+        team_members = [
+            {
+                **member,
+                "profile_url": reverse("about_detail", args=[member["slug"]]),
+            }
+            for member in [FOUNDER, *EXECUTIVE_TEAM]
+        ]
+        return render(
+            request,
+            "clinic/medical_team.html",
+            {
+                "page_title": "Founder and Executive Team | Karis Medical",
+                "facts": PUBLIC_FACTS,
+                "detail": detail,
+                "team_members": team_members,
+            },
+        )
+
+    return render(
+        request,
+        "clinic/about_detail.html",
+        {
+            "page_title": f"{detail['title']} | Karis Medical",
+            "facts": PUBLIC_FACTS,
+            "detail": detail,
+            "about": ABOUT_PROFILE,
+            "detail_section": (
+                "Looking ahead"
+                if detail["slug"] == ABOUT_PROFILE["future_development"]["slug"]
+                else "Medical team and leadership"
+            ),
+        },
+    )
+
+
+def find_doctor(request: HttpRequest) -> HttpResponse:
+    return render(
+        request,
+        "clinic/find_doctor.html",
+        {
+            "page_title": "Find a Doctor | Karis Medical",
+            "facts": PUBLIC_FACTS,
+            "doctors": DOCTOR_PROFILES,
+            "specialty_filters": SPECIALTY_FILTERS,
+            "branches": BRANCHES,
+        },
+    )
+
+
+def doctor_profile(request: HttpRequest, slug: str) -> HttpResponse:
+    doctor = next(
+        (profile for profile in DOCTOR_PROFILES if profile["slug"] == slug),
+        None,
+    )
+    if doctor is None:
+        raise Http404("Doctor profile not found.")
+
+    return render(
+        request,
+        "clinic/doctor_profile.html",
+        {
+            "page_title": f"{doctor['specialty']} Profile | Karis Medical",
+            "facts": PUBLIC_FACTS,
+            "doctor": doctor,
+        },
+    )
+
+
 def _process_appointment_booking(
     request: HttpRequest, redirect_route: str = "appointments"
 ) -> tuple[dict, HttpResponse | None]:
@@ -118,6 +227,11 @@ def _process_appointment_booking(
         preselected_service = request.GET.get("service", "")
         if preselected_service.isdigit():
             form.fields["service"].initial = int(preselected_service)
+        preselected_specialty = request.GET.get("specialty", "")
+        if preselected_specialty in {
+            label for _, label in SPECIALTY_FILTERS
+        }:
+            form.fields["specialty"].initial = preselected_specialty
 
     if request.method == "POST" and form.is_valid():
         try:
@@ -138,6 +252,9 @@ def _process_appointment_booking(
                     full_name=form.cleaned_data["full_name"],
                     phone=form.cleaned_data["phone"],
                     email=form.cleaned_data["email"],
+                    specialty=form.cleaned_data["specialty"],
+                    notes=form.cleaned_data["notes"],
+                    branch=form.cleaned_data["branch"],
                     consented_at=timezone.now(),
                 )
         except AppointmentSlot.DoesNotExist:
@@ -204,6 +321,7 @@ def services(request: HttpRequest) -> HttpResponse:
         request,
         "services",
         {
+            "service_groups": SERVICE_GROUPS,
             "service_categories": grouped_services,
             "service_reference": SERVICE_REFERENCE,
             "service_reference_note": SERVICE_REFERENCE_NOTE,
@@ -216,13 +334,19 @@ def contact(request: HttpRequest) -> HttpResponse:
     return _render_page(request, "contact")
 
 
+def insurance(request: HttpRequest) -> HttpResponse:
+    return _render_page(request, "insurance", {"insurers": INSURERS})
+
+
 def privacy(request: HttpRequest) -> HttpResponse:
     if settings.APPOINTMENTS_ENABLED:
         appointment_privacy = (
             "When booking is enabled, the site collects your name, phone, email, "
-            "chosen service, and appointment time. These details are used to manage "
-            f"your appointment and are deleted after {settings.APPOINTMENT_RETENTION_DAYS} days. "
-            "No symptoms or medical history are requested."
+            "chosen branch, specialty preference, service, appointment time, and "
+            "optional appointment notes for practical logistics only. These "
+            "details are used to manage your appointment "
+            f"and are deleted after {settings.APPOINTMENT_RETENTION_DAYS} days. "
+            "Do not submit symptoms, diagnoses, or medical history."
         )
     else:
         appointment_privacy = (
@@ -237,11 +361,16 @@ def privacy(request: HttpRequest) -> HttpResponse:
 def _send_appointment_emails(appointment: Appointment) -> bool:
     local_start = timezone.localtime(appointment.slot.starts_at)
     service_name = appointment.slot.service.name
-    time_text = local_start.strftime("%A, %d %B %Y at %H:%M (Uganda time)")
+    time_label = local_start.strftime("%I:%M %p").lstrip("0")
+    time_text = (
+        f"{local_start:%A, %d %B %Y} at {time_label} (Uganda time)"
+    )
     reference = str(appointment.reference)
     clinic_body = (
         "A new appointment has been confirmed.\n\n"
         f"Service: {service_name}\n"
+        f"Specialty or care area: {appointment.specialty or 'Not specified'}\n"
+        f"Branch: {appointment.get_branch_display() or 'Not specified'}\n"
         f"Time: {time_text}\n"
         f"Name: {appointment.full_name}\n"
         f"Phone: {appointment.phone}\n"
@@ -251,6 +380,8 @@ def _send_appointment_emails(appointment: Appointment) -> bool:
     visitor_body = (
         "Your appointment with Karis Medical is confirmed.\n\n"
         f"Service: {service_name}\n"
+        f"Specialty or care area: {appointment.specialty or 'Not specified'}\n"
+        f"Branch: {appointment.get_branch_display() or 'Not specified'}\n"
         f"Time: {time_text}\n"
         f"Reference: {reference}\n\n"
         "Keep this reference for your records."
@@ -375,13 +506,18 @@ def staff_dashboard(request: HttpRequest) -> HttpResponse:
 
                 for day_offset in range(days):
                     current_date = start_date + timedelta(days=day_offset)
-                    cursor = timezone.make_aware(
-                        datetime.combine(current_date, day_start), tz
-                    )
                     end_boundary = timezone.make_aware(
                         datetime.combine(current_date, day_end), tz
                     )
-                    while cursor + duration <= end_boundary:
+                    for time_value in APPOINTMENT_TIMES:
+                        slot_time = time.fromisoformat(time_value)
+                        if not day_start <= slot_time <= day_end:
+                            continue
+                        cursor = timezone.make_aware(
+                            datetime.combine(current_date, slot_time), tz
+                        )
+                        if cursor + duration > end_boundary:
+                            continue
                         if cursor > now:
                             for svc in services_list:
                                 _, created = AppointmentSlot.objects.get_or_create(
@@ -394,7 +530,6 @@ def staff_dashboard(request: HttpRequest) -> HttpResponse:
                                 )
                                 if created:
                                     created_count += 1
-                        cursor += duration
                 messages.success(
                     request,
                     f"Generated {created_count} new bookable appointment slots.",

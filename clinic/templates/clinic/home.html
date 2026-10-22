@@ -137,6 +137,16 @@
       <p class="item-index">KAMPALA · UGANDA</p>
       <h3>{{ branch.name }}</h3>
       <address>{{ branch.address }}</address>
+      <a
+        class="branch-location"
+        href="{{ branch.map_url }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="View {{ branch.name }} location on Google Maps"
+      >
+        <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+        <span>View location on map</span>
+      </a>
       <a class="branch-phone" href="{{ branch.tel }}">{{ branch.phone }}</a>
     </article>
     {% endfor %}

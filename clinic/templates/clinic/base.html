@@ -26,9 +26,10 @@
     />
     <link
       rel="stylesheet"
-      href="{% static 'clinic/css/site.css' %}?v=20261019-10"
+      href="{% static 'clinic/css/site.css' %}?v=20261022-9"
     />
     <script src="{% static 'clinic/js/theme.js' %}?v=20261019" defer></script>
+    <script src="{% static 'clinic/js/location-pins.js' %}?v=20261022-1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -88,10 +89,9 @@
         >
           <a href="{% url 'home' %}" data-page="home">Home</a>
           <a href="{% url 'about' %}" data-page="about">About</a>
+          <a href="{% url 'find_doctor' %}" data-page="find_doctor">Find a doctor</a>
           <a href="{% url 'services' %}" data-page="services">Services</a>
-          <a href="{% url 'appointments' %}" data-page="appointments"
-            >Appointments</a
-          >
+          <a href="{% url 'insurance' %}" data-page="insurance">Insurance</a>
           <a href="{% url 'contact' %}" data-page="contact">Contact</a>
           {% if request.user.is_authenticated and request.user.is_staff %}
           <a href="{% url 'staff_dashboard' %}" data-page="staff_dashboard"
@@ -111,6 +111,16 @@
             <option value="dark">Dark</option>
           </select>
         </label>
+        <a
+          class="appointments-cta"
+          href="{% url 'appointments' %}#service-booking"
+          aria-label="Request appointment"
+          title="Request appointment"
+          {% if request.resolver_match.url_name == "appointments" %}aria-current="page"{% endif %}
+        >
+          <i class="bi bi-calendar2-check" aria-hidden="true"></i>
+          <span>Request appointment</span>
+        </a>
         <button
           class="nav-toggle"
           type="button"
@@ -143,6 +153,7 @@
           <h2>Our clinic</h2>
           <a href="{% url 'about' %}">About Karis</a
           ><a href="{% url 'contact' %}">Branches &amp; contact</a
+          ><a href="{% url 'insurance' %}">Insurance</a
           ><a href="{% url 'privacy' %}">Privacy</a
           ><a href="{% url 'staff_dashboard' %}">Staff portal</a>
         </nav>
@@ -150,8 +161,8 @@
           <h2>Speak with a branch</h2>
           <a href="tel:0393001567">Kyanja <span>039 300 1567</span></a
           ><a href="tel:0393104667">Naalya <span>039 310 4667</span></a
-          ><a href="mailto:care@karismedical.org"
-            >Email <span>care@karismedical.org</span></a
+          ><a href="{{ facts.mailto }}"
+            >Email <span>{{ facts.email }}</span></a
           >
           <p>Open 24 hours, Monday to Sunday</p>
         </div>
@@ -165,7 +176,7 @@
         >
           <a
             class="social-item"
-            href="https://wa.me/256393001567"
+            href="https://wa.me/256791234493"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="WhatsApp Kyanja branch"
@@ -174,7 +185,7 @@
           ></a>
           <a
             class="social-item"
-            href="https://www.instagram.com/"
+            href="https://www.instagram.com/karismedical/"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram"
@@ -183,16 +194,7 @@
           ></a>
           <a
             class="social-item"
-            href="https://www.facebook.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Facebook"
-            title="Facebook"
-            ><i class="bi bi-facebook" aria-hidden="true"></i
-          ></a>
-          <a
-            class="social-item"
-            href="https://x.com/"
+            href="https://x.com/karismedical"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Twitter"
@@ -201,7 +203,7 @@
           ></a>
           <a
             class="social-item"
-            href="https://www.tiktok.com/"
+            href="https://www.tiktok.com/@karismedical"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="TikTok"

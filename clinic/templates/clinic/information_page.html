@@ -5,6 +5,51 @@
   <p class="page-lede">{{ page.intro }}</p>
 </header>
 
+{% if page_key == "insurance" %}
+<section class="insurance-intro" aria-labelledby="insurance-directory-title">
+  <div class="insurance-intro-icon" aria-hidden="true">
+    <i class="bi bi-shield-check"></i>
+  </div>
+  <div>
+    <p class="eyebrow">COVERAGE &amp; CARE</p>
+    <h2 id="insurance-directory-title">{{ page.section_title }}</h2>
+    <p>
+      The following providers have been listed by Karis Medical. Please verify
+      that your specific policy and planned service are covered before travelling.
+    </p>
+  </div>
+</section>
+
+<section class="insurance-directory" aria-label="Listed insurance providers">
+  {% for insurer in insurers %}
+  <article class="insurance-card">
+    <i class="bi bi-building-check" aria-hidden="true"></i>
+    <h3>{{ insurer }}</h3>
+    <p>Contact your insurer to confirm your plan's benefits and requirements.</p>
+  </article>
+  {% endfor %}
+</section>
+
+<section class="insurance-guidance" aria-labelledby="insurance-guidance-title">
+  <h2 id="insurance-guidance-title">Before your visit</h2>
+  <ul>
+    <li>Confirm that your policy is active and the planned care is covered.</li>
+    <li>Ask whether pre-authorisation or a referral is required.</li>
+    <li>Check for co-payments, exclusions, or other out-of-pocket costs.</li>
+    <li>Bring your insurance membership details and a valid form of identification.</li>
+  </ul>
+  <p>{{ page.notice }}</p>
+  <div class="insurance-contact-actions">
+    <a class="button-primary" href="{{ branches.0.tel }}">
+      <i class="bi bi-telephone" aria-hidden="true"></i> Call Kyanja
+    </a>
+    <a class="button-secondary" href="{{ facts.mailto }}">
+      <i class="bi bi-envelope" aria-hidden="true"></i> Email Karis Medical
+    </a>
+  </div>
+</section>
+{% endif %}
+
 {% if page_key == "about" %}
 <figure class="page-photograph">
   <img
@@ -40,7 +85,13 @@
     <h3>Core values</h3>
     <ul class="values-list">
       {% for value in about.values %}
-      <li>{{ value }}</li>
+      <li class="value-card">
+        <i class="bi {{ value.icon }}" aria-hidden="true"></i>
+        <div>
+          <h4>{{ value.title }}</h4>
+          <p>{{ value.description }}</p>
+        </div>
+      </li>
       {% endfor %}
     </ul>
   </section>
@@ -75,11 +126,45 @@
       Staff names, qualifications, and credentials will be published after the
       clinic verifies and authorizes each profile.
     </p>
+    <p class="team-directory-actions">
+      <a class="button-primary" href="{% url 'about_detail' 'medical-team' %}">
+        <i class="bi bi-people" aria-hidden="true"></i> Founder and executive team
+      </a>
+      <a class="button-secondary" href="{% url 'find_doctor' %}">
+        <i class="bi bi-search" aria-hidden="true"></i> Find a doctor
+      </a>
+    </p>
     <ul class="team-list">
       {% for role in about.team_roles %}
-      <li><strong>{{ role.title }}</strong><span>{{ role.detail }}</span></li>
+      <li>
+        <a class="about-subsection-link" href="{% url 'about_detail' role.slug %}">
+          <span>{{ role.title }}</span>
+          <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+        </a>
+      </li>
       {% endfor %}
     </ul>
+  </section>
+
+  <section
+    class="about-section about-section-wide"
+    aria-labelledby="future-development-title"
+  >
+    <p class="eyebrow">LOOKING AHEAD</p>
+    <h2 id="future-development-title">
+      <a
+        class="about-subsection-link future-development-link"
+        href="{% url 'about_detail' about.future_development.slug %}"
+      >
+        <span>{{ about.future_development.title }}</span>
+        <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+      </a>
+    </h2>
+    <p class="project-location">
+      <i class="bi bi-geo-alt" aria-hidden="true"></i>
+      {{ about.future_development.location }}
+    </p>
+    {% include "clinic/_future_projects.html" with project_section=about.future_development %}
   </section>
 
   <section
@@ -120,7 +205,7 @@
 <nav class="services-section-nav" aria-label="Services page sections">
   <a href="#confirmed-services">
     <span class="services-nav-index">01</span>
-    <span>Confirmed services</span>
+    <span>Service groups</span>
     <i class="bi bi-arrow-down" aria-hidden="true"></i>
   </a>
   <a href="#service-booking">
@@ -154,6 +239,16 @@
       </p>
       <h3>{{ branch.name }}</h3>
       <address>{{ branch.address }}</address>
+      <a
+        class="branch-location"
+        href="{{ branch.map_url }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="View {{ branch.name }} location on Google Maps"
+      >
+        <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+        <span>View location on map</span>
+      </a>
       <div class="branch-actions">
         <a class="branch-phone" href="{{ branch.tel }}">
           <i class="bi bi-telephone" aria-hidden="true"></i>
@@ -192,44 +287,86 @@
     <h2 id="details-title">{{ page.section_title }}</h2>
     {% if page_key == "services" %}
     <p class="services-directory-lede">
-      Browse services currently listed by Karis Medical. Choose “Book visit” to
-      start a booking for that service.
+      Browse our care areas below. Contact a branch to confirm availability and
+      details for your visit.
     </p>
-    {% endif %} {% if page_key == "services" %} {% if service_categories %}
-    <div class="service-directory">
-      {% for category in service_categories %}
-      <details class="service-accordion" {% if forloop.first %}open{% endif %}>
-        <summary>
-          <span class="service-category-name">{{ category.title }}</span>
-          <span class="service-category-count"
-            >{{ category.services|length }} services</span
-          >
-        </summary>
-        <ul>
-          {% for service in category.services %}
-          <li>
-            <div class="service-item-row">
-              <div>
-                <strong>{{ service.name }}</strong>
-                {% if service.description %}
-                <p>{{ service.description }}</p>
-                {% endif %}
-              </div>
-              <a
-                class="service-book-trigger"
-                href="#service-booking"
-                data-select-service="{{ service.pk }}"
-              >
-                <i class="bi bi-calendar2-check" aria-hidden="true"></i>
-                Book visit
-              </a>
-            </div>
-          </li>
+    {% endif %} {% if page_key == "services" %}
+    <div class="service-groups" id="service-groups">
+      {% for group in service_groups %}
+      <section
+        class="service-group"
+        aria-labelledby="service-group-title-{{ forloop.counter }}"
+      >
+        <figure class="service-group-image">
+          <img
+            src="{% static group.image %}"
+            alt="{{ group.image_alt }}"
+            loading="lazy"
+          />
+        </figure>
+        <h3 id="service-group-title-{{ forloop.counter }}">
+          <span class="service-group-index">0{{ forloop.counter }}</span>
+          {{ group.title }}
+        </h3>
+        <div class="service-group-items">
+          {% for item in group.items %}
+          <article class="service-group-item">
+            <strong>{{ item.title }}</strong>
+            <p>{{ item.description }}</p>
+          </article>
           {% endfor %}
-        </ul>
-      </details>
+        </div>
+      </section>
       {% endfor %}
     </div>
+    {% if service_categories %}
+    <section
+      class="bookable-services"
+      aria-labelledby="bookable-services-title"
+    >
+      <h3 id="bookable-services-title">Services available to book online</h3>
+      <p>
+        Choose “Book visit” for a service below to check available appointment
+        times.
+      </p>
+      <div class="service-directory">
+        {% for category in service_categories %}
+        <details
+          class="service-accordion"
+          {% if forloop.first %}open{% endif %}
+        >
+          <summary>
+            <span class="service-category-name">{{ category.title }}</span>
+            <span class="service-category-count"
+              >{{ category.services|length }} services</span
+            >
+          </summary>
+          <ul>
+            {% for service in category.services %}
+            <li>
+              <div class="service-item-row">
+                <div>
+                  <strong>{{ service.name }}</strong>
+                  {% if service.description %}
+                  <p>{{ service.description }}</p>
+                  {% endif %}
+                </div>
+                <a
+                  class="service-book-trigger"
+                  href="#service-booking"
+                  data-select-service="{{ service.pk }}"
+                >
+                  <i class="bi bi-calendar2-check" aria-hidden="true"></i>
+                  Book visit
+                </a>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </details>
+        {% endfor %}
+      </div>
+    </section>
     {% else %}
     <p>{{ page.notice }}</p>
     {% endif %} {% else %}
@@ -248,6 +385,16 @@
       <article class="branch-card">
         <h4>{{ branch.name }}</h4>
         <address>{{ branch.address }}</address>
+        <a
+          class="branch-location"
+          href="{{ branch.map_url }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="View {{ branch.name }} location on Google Maps"
+        >
+          <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+          <span>View location on map</span>
+        </a>
         <a class="branch-phone" href="{{ branch.tel }}">{{ branch.phone }}</a>
       </article>
       {% endfor %}

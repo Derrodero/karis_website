@@ -30,7 +30,7 @@
 - Database: SQLite by default (`DJANGO_DATABASE_PATH`); schema managed by Django migrations. Verify a durable database option and filesystem permissions with cPanel before production. Migration `0002_approved_services` seeds only the three clinic-approved services; no appointment slots are seeded.
 - Appointment retention: `APPOINTMENT_RETENTION_DAYS`; run `python manage.py purge_expired_appointments` on a scheduled task.
 - Email: host SMTP via `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`, and `APPOINTMENT_NOTIFICATION_EMAIL`. Never commit credentials.
-- Booking activation gate: `APPOINTMENT_PRIVACY_APPROVED=true`, positive retention, configured SMTP, active clinic services, and future slots. The form collects name/phone/email/service/time/consent only; no clinical notes.
+- Booking activation gate: `APPOINTMENT_PRIVACY_APPROVED=true`, positive retention, configured SMTP, active clinic services, and future slots. The form collects name/phone/email/branch/specialty preference/service/date/time/consent and optional practical logistics notes. Notes are visible only to staff in the dashboard/admin, excluded from email, and retained under the configured appointment-retention policy. Do not collect symptoms, diagnoses, or medical history.
 - Azure Blob Storage: optional Enhancement only; unused by the current implementation. Local approved assets belong in Django static files.
 - No public API, symptoms, medical history, patient documents, or contact-form submissions.
 - Keep clinic facts not confirmed by the plan unpublished.

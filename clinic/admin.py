@@ -24,15 +24,26 @@ class AppointmentSlotAdmin(admin.ModelAdmin):
 
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
-    list_display = ("reference", "full_name", "slot", "status", "created_at")
-    list_filter = ("status", "slot__service")
+    list_display = (
+        "reference",
+        "full_name",
+        "branch",
+        "specialty",
+        "slot",
+        "status",
+        "created_at",
+    )
+    list_filter = ("status", "branch", "slot__service")
     search_fields = ("full_name", "email", "phone", "reference")
     readonly_fields = (
         "reference",
+        "branch",
         "slot",
         "full_name",
         "phone",
         "email",
+        "specialty",
+        "notes",
         "consented_at",
         "created_at",
     )

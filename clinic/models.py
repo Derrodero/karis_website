@@ -41,7 +41,9 @@ class AppointmentSlot(models.Model):
 
     @property
     def display_time(self) -> str:
-        return timezone.localtime(self.starts_at).strftime("%A, %d %B %Y, %H:%M")
+        local_start = timezone.localtime(self.starts_at)
+        time_label = local_start.strftime("%I:%M %p").lstrip("0")
+        return f"{local_start:%A, %d %B %Y}, {time_label}"
 
 
 class Appointment(models.Model):
@@ -49,7 +51,17 @@ class Appointment(models.Model):
         CONFIRMED = "confirmed", "Confirmed"
         CANCELLED = "cancelled", "Cancelled"
 
+    class Branch(models.TextChoices):
+        KYANJA = "kyanja", "Kyanja branch"
+        NAALYA = "naalya", "Naalya branch"
+
     reference = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    branch = models.CharField(
+        max_length=12,
+        choices=Branch.choices,
+        blank=True,
+        default="",
+    )
     slot = models.ForeignKey(
         AppointmentSlot, on_delete=models.PROTECT, related_name="appointments"
     )
@@ -64,6 +76,8 @@ class Appointment(models.Model):
         ],
     )
     email = models.EmailField(max_length=254)
+    specialty = models.CharField(max_length=120, blank=True)
+    notes = models.CharField(max_length=500, blank=True)
     consented_at = models.DateTimeField()
     status = models.CharField(
         max_length=12, choices=Status.choices, default=Status.CONFIRMED

@@ -28,6 +28,13 @@ urlpatterns = [
     path("staff/", admin.site.urls),
     path("", views.home, name="home"),
     path("about", views.about, name="about"),
+    path("about/<slug:slug>", views.about_detail, name="about_detail"),
+    path("find-a-doctor", views.find_doctor, name="find_doctor"),
+    path(
+        "find-a-doctor/<slug:slug>",
+        views.doctor_profile,
+        name="doctor_profile",
+    ),
     path("services", views.services, name="services"),
     path(
         "patient-information",
@@ -35,6 +42,7 @@ urlpatterns = [
         name="patient_information",
     ),
     path("contact", views.contact, name="contact"),
+    path("insurance", views.insurance, name="insurance"),
     path("appointments", views.appointments, name="appointments"),
     path("privacy", views.privacy, name="privacy"),
 ]

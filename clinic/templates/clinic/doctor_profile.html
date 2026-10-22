@@ -1,0 +1,38 @@
+{% extends "clinic/base.html" %}
+{% block content %}
+<header class="page-heading">
+  <p class="eyebrow">{{ doctor.specialty }}</p>
+  <h1>{{ doctor.name }}</h1>
+  <p class="page-lede">{{ doctor.position }}</p>
+</header>
+
+<section class="team-profile-panel" aria-label="Doctor profile">
+  <div
+    class="staff-photo-placeholder staff-photo-placeholder--profile"
+    role="img"
+    aria-label="Doctor photo pending verification"
+  >
+    <i class="bi bi-person" aria-hidden="true"></i>
+    <span>Photo pending confirmation</span>
+  </div>
+  <div>
+    <p class="eyebrow">PROFILE PENDING CONFIRMATION</p>
+    <h2>{{ doctor.specialty }}</h2>
+    <p>{{ doctor.description }}</p>
+    <p><strong>Position:</strong> {{ doctor.position }}</p>
+    <p><strong>Branch:</strong> {{ doctor.branch }}</p>
+    <div class="team-member-actions">
+      <a
+        class="button-primary"
+        href="{% url 'appointments' %}?specialty={{ doctor.specialty|urlencode }}#service-booking"
+      >
+        <i class="bi bi-calendar2-check" aria-hidden="true"></i>
+        Request appointment
+      </a>
+      <a class="button-secondary" href="{% url 'find_doctor' %}">
+        Back to Find a Doctor
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

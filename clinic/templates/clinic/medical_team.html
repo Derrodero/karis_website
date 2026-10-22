@@ -1,0 +1,45 @@
+{% extends "clinic/base.html" %}
+{% block content %}
+<header class="page-heading">
+  <p class="eyebrow">MEDICAL TEAM AND LEADERSHIP</p>
+  <h1>{{ detail.title }}</h1>
+  <p class="page-lede">{{ detail.detail }}</p>
+</header>
+
+<section class="team-directory" aria-label="Founder and executive team">
+  {% for member in team_members %}
+  <article class="team-member-card">
+    <div class="team-member-copy">
+      <p class="eyebrow">
+        {% if forloop.first %}FOUNDING LEADERSHIP{% else %}EXECUTIVE TEAM{% endif %}
+      </p>
+      <h2>{{ member.name }}</h2>
+      <p class="team-member-position">{{ member.position }}</p>
+      <p>{{ member.description }}</p>
+      <div class="team-member-actions">
+        <a class="button-secondary" href="{{ member.profile_url }}">
+          <i class="bi bi-person-vcard" aria-hidden="true"></i> View profile
+        </a>
+        <a class="button-primary" href="{% url 'appointments' %}#service-booking">
+          <i class="bi bi-calendar2-check" aria-hidden="true"></i>
+          Request appointment
+        </a>
+      </div>
+    </div>
+    <div
+      class="staff-photo-placeholder"
+      role="img"
+      aria-label="Photo pending verification"
+    >
+      <i class="bi bi-person" aria-hidden="true"></i>
+      <span>Photo pending confirmation</span>
+    </div>
+  </article>
+  {% endfor %}
+</section>
+
+<nav class="page-return" aria-label="Related pages">
+  <a href="{% url 'about' %}">Back to About Karis</a>
+  <a href="{% url 'find_doctor' %}">Find a doctor</a>
+</nav>
+{% endblock %}

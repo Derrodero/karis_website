@@ -1,0 +1,34 @@
+{% extends "clinic/base.html" %}
+{% block content %}
+<header class="page-heading">
+  <p class="eyebrow">{{ detail_section }}</p>
+  <h1>{{ detail.title }}</h1>
+  <p class="page-lede">{{ detail.detail }}</p>
+</header>
+
+{% if detail.slug == "upcoming-projects" %}
+<section class="about-projects-detail" aria-labelledby="project-location">
+  <p class="project-location" id="project-location">
+    <i class="bi bi-geo-alt" aria-hidden="true"></i>
+    {{ about.future_development.location }}
+  </p>
+  {% include "clinic/_future_projects.html" with project_section=about.future_development %}
+</section>
+{% else %}
+<section class="about-detail-card" aria-labelledby="about-detail-status">
+  <i class="bi bi-info-circle" aria-hidden="true"></i>
+  <div>
+    <h2 id="about-detail-status">Information awaiting confirmation</h2>
+    <p>
+      More information will be published when it has been confirmed and
+      approved by Karis Medical.
+    </p>
+  </div>
+</section>
+{% endif %}
+
+<nav class="page-return" aria-label="Related pages">
+  <a href="{% url 'about' %}">Back to About Karis</a>
+  <a href="{% url 'contact' %}">Contact information</a>
+</nav>
+{% endblock %}

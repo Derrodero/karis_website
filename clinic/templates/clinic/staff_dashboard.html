@@ -95,6 +95,8 @@
           <th>Date &amp; Time</th>
           <th>Patient</th>
           <th>Contact</th>
+          <th>Location</th>
+          <th>Specialty</th>
           <th>Service</th>
           <th>Reference</th>
           <th>Status</th>
@@ -109,7 +111,15 @@
           <td>
             <a href="tel:{{ appt.phone }}">{{ appt.phone }}</a><br />
             <a href="mailto:{{ appt.email }}">{{ appt.email }}</a>
+            {% if appt.notes %}
+            <details class="appointment-notes">
+              <summary>Additional notes</summary>
+              <p>{{ appt.notes }}</p>
+            </details>
+            {% endif %}
           </td>
+          <td>{{ appt.get_branch_display|default:"Not specified" }}</td>
+          <td>{{ appt.specialty|default:"Not specified" }}</td>
           <td>{{ appt.slot.service.name }}</td>
           <td><code>{{ appt.reference|truncatechars:12 }}</code></td>
           <td>
@@ -174,6 +184,10 @@
   <section class="staff-panel" aria-labelledby="bulk-slot-title">
     <p class="eyebrow">SCHEDULE GENERATOR</p>
     <h2 id="bulk-slot-title">Generate Upcoming Slots</h2>
+    <p class="verification-copy">
+      Public appointment times are scheduled at 9:00 AM, 10:30 AM, 12:00 PM,
+      2:00 PM, and 3:30 PM within the selected daily range.
+    </p>
     <form class="staff-form" method="post">
       {% csrf_token %}
       <input type="hidden" name="action" value="bulk_generate" />

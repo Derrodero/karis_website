@@ -42,7 +42,7 @@
 |---------------|------------|---------------------|----------------------|----------------|
 | Blob Storage | Optional external origin for clinic-approved public media. Keep the supplied logo and approved site images in Django static files by default; no uploads, patient files, or Azure provisioning are in scope. | `PUBLIC_MEDIA_BASE_URL` | Empty; use local static files | Enhancement |
 
-No public application API, symptoms, medical history, or Azure provisioning is in scope. Appointment records contain name, phone, email, selected service/time, consent time, status, and a reference. Staff manage services and slots through Django admin. SMTP delivery, clinic-approved privacy wording, and a positive retention period are required before public booking is enabled.
+No public application API, symptoms, medical history, or Azure provisioning is in scope. Appointment records contain name, phone, email, selected branch, specialty preference, service/time, optional practical logistics notes, consent time, status, and a reference. Notes are restricted to appointment logistics, visible only to staff, excluded from email, and deleted under the configured appointment retention period. Staff manage services and slots through Django admin. SMTP delivery, clinic-approved privacy wording, and a positive retention period are required before public booking is enabled.
 
 ---
 
@@ -112,8 +112,8 @@ About Karis — profile details:
 | Established | April 2025 | Confirmed |
 | Slogan | Beyond care. | Confirmed |
 | Supporting line | Compassionate care and a healthier community. | Confirmed |
-| Mission | To develop the healthcare industry. | Confirmed |
-| Vision | To create a healthy community and make quality health services accessible. | Confirmed |
+| Mission | To glorify God through healthcare. | Confirmed |
+| Vision | To be the health care provider of choice for all Ugandans. | Confirmed |
 | Core values | Compassion, integrity, hospitality, professionalism, respect, teamwork, patient safety | Confirmed |
 | Founding story | Original summary based on the supplied founding date, mission, and vision | Published; further milestones pending verification |
 | Patient-growth and testimonial metrics | No verified figures supplied | Unpublished pending records and approval |
@@ -150,7 +150,7 @@ Contact — approved channels:
 Privacy — launch data scope:
 | Data practice | Value | Publication state |
 |---------------|-------|-------------------|
-| Appointment data | Name, phone, email, chosen service/time, and consent timestamp; no symptoms or medical history | Approved fields; booking disabled pending policy configuration |
+| Appointment data | Name, phone, email, branch, specialty preference, service/time, optional practical notes, and consent timestamp; no symptoms or medical history | Approved fields; booking disabled pending policy configuration |
 | Contact form submissions | Not in launch scope | Confirmed scope |
 | Retention period and privacy notice wording | Not supplied | Booking remains disabled pending clinic approval |
 

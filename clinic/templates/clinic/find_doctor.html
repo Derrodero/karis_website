@@ -1,0 +1,119 @@
+{% extends "clinic/base.html" %}
+{% load static %}
+{% block content %}
+<header class="page-heading">
+  <p class="eyebrow">KARIS MEDICAL · KAMPALA</p>
+  <h1>Find a doctor</h1>
+  <p class="page-lede">
+    Search by a doctor's name, specialty, role, or branch. Staff names, photos,
+    credentials, and branch schedules will appear once confirmed by the clinic.
+  </p>
+</header>
+
+<section class="doctor-search-panel" aria-label="Search doctor directory">
+  <label for="doctor-search">
+    Search by name, specialty, or medical role
+    <input
+      id="doctor-search"
+      type="search"
+      placeholder="For example, Paediatrics or a doctor's name"
+      autocomplete="off"
+      data-doctor-search
+    />
+  </label>
+  <label for="doctor-branch">
+    Branch location
+    <select id="doctor-branch" data-doctor-branch>
+      <option value="">All branches</option>
+      {% for branch in branches %}
+      <option value="{{ branch.key }}">{{ branch.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+</section>
+
+<div class="doctor-directory-layout" data-doctor-directory>
+  <aside class="doctor-filter-panel" aria-labelledby="doctor-filter-title">
+    <h2 id="doctor-filter-title">Filter by specialty</h2>
+    <p>Choose one or more areas to narrow the directory.</p>
+    <fieldset>
+      <legend>Specialties and care areas</legend>
+      {% for key, label in specialty_filters %}
+      <label class="doctor-filter-option">
+        <input type="checkbox" value="{{ key }}" data-specialty-filter />
+        <span>{{ label }}</span>
+      </label>
+      {% endfor %}
+    </fieldset>
+    <p class="verification-copy">
+      Individual staff and branch assignments are awaiting clinic confirmation.
+    </p>
+  </aside>
+
+  <section class="doctor-results-panel" aria-labelledby="doctor-results-title">
+    <header class="doctor-results-heading">
+      <div>
+        <p class="eyebrow">SPECIALIST DIRECTORY</p>
+        <h2 id="doctor-results-title">Doctors and care areas</h2>
+      </div>
+      <p class="doctor-result-count" aria-live="polite" data-result-count>
+        {{ doctors|length }} profiles
+      </p>
+    </header>
+    <p class="doctor-directory-notice">
+      Profiles below are placeholders; they do not identify confirmed staff or
+      indicate confirmed service availability.
+    </p>
+    <div class="doctor-card-list">
+      {% for doctor in doctors %}
+      <article
+        class="doctor-card"
+        data-doctor-card
+        data-search="{{ doctor.name }} {{ doctor.specialty }} {{ doctor.position }} {{ doctor.branch }}"
+        data-specialty="{{ doctor.specialty_key }}"
+        data-branch="{{ doctor.branch_key }}"
+      >
+        <div class="doctor-card-copy">
+          <p class="doctor-specialty">{{ doctor.specialty }}</p>
+          <h3>{{ doctor.name }}</h3>
+          <p><strong>Position:</strong> {{ doctor.position }}</p>
+          <p>{{ doctor.description }}</p>
+          <p class="doctor-branch">
+            <i class="bi bi-geo-alt" aria-hidden="true"></i> {{ doctor.branch }}
+          </p>
+          <div class="doctor-card-actions">
+            <a
+              class="button-secondary"
+              href="{% url 'doctor_profile' doctor.slug %}"
+            >
+              View profile
+            </a>
+            <a
+              class="button-primary"
+              href="{% url 'appointments' %}?specialty={{ doctor.specialty|urlencode }}#service-booking"
+            >
+              Request appointment
+            </a>
+          </div>
+        </div>
+        <div
+          class="staff-photo-placeholder doctor-photo-placeholder"
+          role="img"
+          aria-label="Doctor photo pending verification"
+        >
+          <i class="bi bi-person" aria-hidden="true"></i>
+          <span>Photo pending</span>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    <p class="doctor-no-results" data-no-results hidden>
+      No matching profiles. Try a different search or clear some filters.
+    </p>
+  </section>
+</div>
+<script
+  src="{% static 'clinic/js/doctor-directory.js' %}?v=20261022-1"
+  defer
+></script>
+{% endblock %}
