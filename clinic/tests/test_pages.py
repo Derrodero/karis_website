@@ -62,8 +62,16 @@ def test_insurance_page_lists_providers_and_adds_navigation_link(client):
     assert b'data-current-page="insurance"' in response.content
     assert b'href="/insurance"' in response.content
     assert b"Listed insurance providers" in response.content
-    for insurer in ("Britam", "AAR", "APA", "Sanlam", "Prudential"):
+    for insurer, logo in (
+        ("Britam", "britam.webp"),
+        ("AAR", "aar.png"),
+        ("APA", "apa.png"),
+        ("Sanlam", "sanlam.png"),
+        ("Prudential", "prudential.png"),
+    ):
         assert insurer.encode() in response.content
+        assert f"alt=\"{insurer} logo\"".encode() in response.content
+        assert f"/static/clinic/images/karis%20medical%20images/{logo}".encode() in response.content
     assert b"Confirm that your policy is active" in response.content
     assert b"Contact your insurer to confirm your plan" in response.content
     assert b"pre-authorisation" in response.content
@@ -306,6 +314,17 @@ def test_contact_page_has_no_submission_form(client):
     assert response.content.count(b"View location on map") == 2
 
 
+def test_accepted_insurance_logos_are_available_in_the_site_footer(client):
+    response = client.get(reverse("home"))
+
+    assert response.status_code == 200
+    assert b'data-insurance-track' in response.content
+    assert b'data-insurance-toggle' in response.content
+    assert b'href="/insurance"' in response.content
+    for insurer in ("Britam", "AAR", "APA", "Sanlam", "Prudential"):
+        assert insurer.encode() in response.content
+
+
 def test_home_branch_cards_link_to_their_google_maps_locations(client):
     response = client.get(reverse("home"))
 
@@ -394,9 +413,9 @@ def test_doctor_specialty_prefills_the_appointment_preference(client):
 
 
 @override_settings(APPOINTMENTS_ENABLED=True, APPOINTMENT_RETENTION_DAYS=90)
-def test_booking_offers_only_the_published_standard_times(client):
+def test_booking_offers_all_published_custom_times(client):
     service = Service.objects.create(name="Clinic-approved visit", is_active=True)
-    for slot_time in ("09:00", "10:30", "12:00", "14:00", "15:30", "11:00"):
+    for slot_time in ("09:00", "10:30", "12:00", "14:00", "15:30", "11:00", "11:17"):
         start = future_slot_start(days=3, slot_time=slot_time)
         AppointmentSlot.objects.create(
             service=service,
@@ -407,9 +426,8 @@ def test_booking_offers_only_the_published_standard_times(client):
     response = client.get(reverse("appointments"))
 
     assert response.status_code == 200
-    for slot_time in ("09:00", "10:30", "12:00", "14:00", "15:30"):
+    for slot_time in ("09:00", "10:30", "12:00", "14:00", "15:30", "11:00", "11:17"):
         assert f'data-time="{slot_time}"'.encode() in response.content
-    assert b'data-time="11:00"' not in response.content
 
 
 @override_settings(
@@ -491,11 +509,6 @@ def test_appointment_page_renders_the_five_step_booking_flow(client):
         "Choose a date",
         "Choose an available time",
         "Appointment summary",
-        "9:00 AM",
-        "10:30 AM",
-        "12:00 PM",
-        "2:00 PM",
-        "3:30 PM",
     ):
         assert step.encode() in response.content
     assert response.content.count(b'data-wizard-panel="') == 5
@@ -664,6 +677,8 @@ def test_services_page_groups_the_requested_care_areas(client):
     assert b'id="service-groups"' in response.content
     assert response.content.count(b'class="service-group-image"') == 5
     assert response.content.count(b'class="service-group-item"') == 14
+    assert b"clinic/images/karis%20medical%20images/laboratory.webp" in response.content
+    assert b"clinic/images/karis%20medical%20images/ambulance.webp" in response.content
     groups_section = response.content.split(b'id="service-groups"', 1)[1].split(
         b"</div>", 1
     )[0]
@@ -789,6 +804,10 @@ def test_staff_dashboard_requires_login_and_allows_slot_and_booking_management(
     dashboard_resp = client.get(reverse("staff_dashboard"))
     assert dashboard_resp.status_code == 200
     assert b"Appointment &amp; Schedule Dashboard" in dashboard_resp.content
+    assert b'type="time"' in dashboard_resp.content
+    assert b'name="start_time"' in dashboard_resp.content
+    for preset in ("09:30", "10:30", "11:30", "14:30", "15:00"):
+        assert f'data-start-time="{preset}"'.encode() in dashboard_resp.content
 
     service = Service.objects.filter(is_active=True).first()
     future_date = (timezone.localdate() + timedelta(days=3)).isoformat()
@@ -798,14 +817,16 @@ def test_staff_dashboard_requires_login_and_allows_slot_and_booking_management(
             "action": "create_slot",
             "service": service.pk,
             "date": future_date,
-            "start_time": "10:30",
+            "start_time": "10:17",
             "duration_minutes": "60",
         },
         follow=True,
     )
     assert create_slot_resp.status_code == 200
-    slot = AppointmentSlot.objects.filter(service=service).first()
-    assert slot is not None
+    slot = AppointmentSlot.objects.get(
+        service=service,
+        starts_at=future_slot_start(days=3, slot_time="10:17"),
+    )
 
     appt = Appointment.objects.create(
         slot=slot,
@@ -825,6 +846,43 @@ def test_staff_dashboard_requires_login_and_allows_slot_and_booking_management(
     logout_resp = client.post(reverse("staff_logout"))
     assert logout_resp.status_code == 302
     assert client.get(reverse("staff_dashboard")).url.startswith(reverse("staff_login"))
+
+
+def test_staff_bulk_schedule_uses_custom_start_and_end_times(
+    client, django_user_model
+):
+    staff = django_user_model.objects.create_user(
+        username="schedule-manager",
+        password="password",
+        is_staff=True,
+    )
+    client.force_login(staff)
+    service = Service.objects.create(name="Custom schedule service", is_active=True)
+    start_date = timezone.localdate() + timedelta(days=3)
+
+    response = client.post(
+        reverse("staff_dashboard"),
+        {
+            "action": "bulk_generate",
+            "services": [service.pk],
+            "start_date": start_date.isoformat(),
+            "days": "1",
+            "day_start": "09:15",
+            "day_end": "11:15",
+            "duration_minutes": "60",
+        },
+        follow=True,
+    )
+
+    assert response.status_code == 200
+    slots = list(
+        AppointmentSlot.objects.filter(service=service)
+        .order_by("starts_at")
+        .values_list("starts_at", "ends_at")
+    )
+    assert len(slots) == 2
+    assert timezone.localtime(slots[0][0]).strftime("%H:%M") == "09:15"
+    assert timezone.localtime(slots[1][0]).strftime("%H:%M") == "10:15"
 
 
 @override_settings(

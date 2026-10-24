@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, time, timedelta
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib import messages
@@ -30,7 +30,6 @@ from clinic.content import (
     SPECIALTY_FILTERS,
 )
 from clinic.forms import (
-    APPOINTMENT_TIMES,
     AppointmentForm,
     StaffBulkSlotForm,
     StaffSlotForm,
@@ -509,15 +508,12 @@ def staff_dashboard(request: HttpRequest) -> HttpResponse:
                     end_boundary = timezone.make_aware(
                         datetime.combine(current_date, day_end), tz
                     )
-                    for time_value in APPOINTMENT_TIMES:
-                        slot_time = time.fromisoformat(time_value)
-                        if not day_start <= slot_time <= day_end:
-                            continue
-                        cursor = timezone.make_aware(
-                            datetime.combine(current_date, slot_time), tz
-                        )
+                    cursor = timezone.make_aware(
+                        datetime.combine(current_date, day_start), tz
+                    )
+                    while cursor <= end_boundary:
                         if cursor + duration > end_boundary:
-                            continue
+                            break
                         if cursor > now:
                             for svc in services_list:
                                 _, created = AppointmentSlot.objects.get_or_create(
@@ -530,6 +526,7 @@ def staff_dashboard(request: HttpRequest) -> HttpResponse:
                                 )
                                 if created:
                                     created_count += 1
+                        cursor += duration
                 messages.success(
                     request,
                     f"Generated {created_count} new bookable appointment slots.",

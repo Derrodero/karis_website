@@ -26,10 +26,12 @@
     />
     <link
       rel="stylesheet"
-      href="{% static 'clinic/css/site.css' %}?v=20261022-9"
+      href="{% static 'clinic/css/site.css' %}?v=20261024-3"
     />
     <script src="{% static 'clinic/js/theme.js' %}?v=20261019" defer></script>
     <script src="{% static 'clinic/js/location-pins.js' %}?v=20261022-1" defer></script>
+    <script src="{% static 'clinic/js/insurance-carousel.js' %}?v=20261024-1" defer></script>
+    <script src="{% static 'clinic/js/staff-slot-times.js' %}?v=20261025-1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -167,6 +169,31 @@
           <p>Open 24 hours, Monday to Sunday</p>
         </div>
       </div>
+      <section class="footer-insurance" aria-labelledby="footer-insurance-title">
+        <div class="footer-insurance-heading">
+          <h2 id="footer-insurance-title">Insurance accepted</h2>
+          <a href="{% url 'insurance' %}">View insurance details</a>
+        </div>
+        <div class="footer-insurance-window">
+          <div class="footer-insurance-track" data-insurance-track>
+            <div class="footer-insurance-set">
+              {% for insurer in insurers %}
+              <span class="footer-insurance-logo">
+                <img src="{% static insurer.logo %}" alt="{{ insurer.name }}" loading="lazy" />
+              </span>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <button
+          class="footer-insurance-toggle"
+          type="button"
+          data-insurance-toggle
+          aria-label="Pause insurance logo rotation"
+        >
+          Pause
+        </button>
+      </section>
       <div class="footer-bottom">
         <span>&copy; {% now "Y" %} Karis Medical</span>
         <div

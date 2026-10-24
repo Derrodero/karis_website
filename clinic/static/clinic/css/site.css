@@ -206,6 +206,9 @@ h1, h2, h3 { color: var(--ink); }
 .about-detail-card p { margin: 0; color: var(--muted); }
 .team-directory { display: grid; gap: 18px; margin: 0 0 28px; }
 .team-member-card, .team-profile-panel { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 26px; align-items: center; padding: 26px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); box-shadow: 0 5px 20px rgb(20 42 76 / 6%); }
+.team-member-card { grid-template-columns: 220px minmax(0, 1fr); }
+.team-member-copy { grid-column: 2; grid-row: 1; }
+.team-member-card > .staff-photo-placeholder { grid-column: 1; grid-row: 1; }
 .team-member-copy h2, .team-profile-panel h2 { margin: 0 0 8px; color: var(--ink); font-family: "DM Serif Display", Georgia, serif; font-size: 1.75rem; font-weight: 400; }
 .team-member-position { margin: 0 0 10px; color: var(--brand-link); font-weight: 700; }
 .team-member-copy > p:not(.eyebrow):not(.team-member-position), .team-profile-panel > div:last-child > p:not(.eyebrow) { color: var(--muted); }
@@ -234,13 +237,14 @@ h1, h2, h3 { color: var(--ink); }
 .doctor-result-count { flex: 0 0 auto; margin: 0; padding: 6px 10px; border-radius: 99px; background: var(--surface-soft); color: var(--brand-link); font-size: 0.84rem; font-weight: 700; }
 .doctor-directory-notice { margin: 8px 0 18px; }
 .doctor-card-list { display: grid; gap: 14px; }
-.doctor-card { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 20px; align-items: center; padding: 18px; border: 1px solid var(--line); border-left: 3px solid var(--brand-primary); border-radius: 5px; background: var(--surface); }
+.doctor-card { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 20px; align-items: center; padding: 18px; border: 1px solid var(--line); border-left: 3px solid var(--brand-primary); border-radius: 5px; background: var(--surface); }
 .doctor-card[hidden] { display: none; }
+.doctor-card-copy { grid-column: 2; grid-row: 1; }
 .doctor-card h3 { margin: 0 0 8px; color: var(--ink); font-size: 1.2rem; }
 .doctor-card-copy > p:not(.doctor-specialty) { margin: 6px 0; color: var(--muted); }
 .doctor-specialty { display: inline-block; margin: 0 0 8px; padding: 5px 10px; border-radius: 99px; background: var(--surface-soft); color: var(--brand-link); font-size: 0.84rem; font-weight: 700; }
 .doctor-branch { font-size: 0.88rem; }
-.doctor-photo-placeholder { grid-column: 2; grid-row: 1; min-height: 160px; }
+.doctor-photo-placeholder { grid-column: 1; grid-row: 1; min-height: 160px; }
 .doctor-photo-placeholder i { font-size: 2.6rem; }
 .doctor-card-actions { margin-top: 12px; }
 .doctor-card-actions .button-primary, .doctor-card-actions .button-secondary { width: auto; min-height: 42px; margin: 0; padding: 9px 12px; font-size: 0.88rem; }
@@ -272,7 +276,7 @@ h1, h2, h3 { color: var(--ink); }
     .team-list { grid-template-columns: 1fr; }
     .doctor-directory-layout { grid-template-columns: minmax(210px, 0.8fr) minmax(0, 2fr); gap: 14px; }
     .doctor-filter-panel, .doctor-results-panel { padding: 18px; }
-    .doctor-card { grid-template-columns: minmax(0, 1fr) 120px; gap: 14px; }
+    .doctor-card { grid-template-columns: 120px minmax(0, 1fr); gap: 14px; }
     .doctor-photo-placeholder { min-height: 140px; }
 }
 @media (max-width: 480px) {
@@ -287,6 +291,11 @@ h1, h2, h3 { color: var(--ink); }
     .button-primary, .button-secondary { width: 100%; }
     .booking-form { padding: 18px; }
     .booking-form button { width: 100%; }
+    .team-member-card { grid-template-columns: 76px minmax(0, 1fr); gap: 12px; padding: 14px; }
+    .team-member-card > .staff-photo-placeholder { min-height: 120px; padding: 10px; }
+    .doctor-card { grid-template-columns: 76px minmax(0, 1fr); gap: 10px; padding: 12px; }
+    .doctor-photo-placeholder { min-height: 120px; padding: 8px; }
+    .doctor-photo-placeholder span { font-size: 0.72rem; }
     .site-footer { flex-wrap: wrap; padding-inline: 14px; }
     .social-links { flex-basis: 100%; order: 3; }
 }
@@ -538,6 +547,18 @@ h1, h2, h3 { text-wrap: balance; }
 .footer-contact > a { display: flex; justify-content: space-between; gap: 12px; margin: 0 0 12px; }
 .footer-contact > a span { color: var(--pico-primary); font-weight: 600; white-space: nowrap; }
 .footer-contact p { margin: 14px 0 0; }
+.footer-insurance { margin: 0 0 28px; }
+.footer-insurance-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.footer-insurance-heading h2 { margin: 0; font-size: 1rem; font-weight: 700; }
+.footer-insurance-heading a { color: var(--muted); font-size: 0.88rem; text-decoration: none; }
+.footer-insurance-heading a:hover { text-decoration: underline; }
+.footer-insurance-window { overflow: hidden; }
+.footer-insurance-track { display: flex; width: max-content; }
+.footer-insurance-set { display: flex; flex: 0 0 auto; align-items: center; gap: 28px; padding-right: 28px; }
+.footer-insurance-logo { display: grid; width: 130px; height: 64px; flex: 0 0 130px; place-items: center; padding: 8px 12px; border-radius: 4px; background: #fff; }
+.footer-insurance-logo img { display: block; max-width: 100%; max-height: 48px; object-fit: contain; }
+.footer-insurance-toggle { display: block; width: auto; min-height: 0; margin: 10px 0 0 auto; padding: 4px 10px; border: 1px solid var(--line); border-radius: 4px; background: transparent; color: var(--muted); font-size: 0.8rem; }
+.footer-insurance-toggle[hidden] { display: none; }
 .footer-bottom { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 24px; border-top: 1px solid var(--line); }
 [data-theme="dark"] { --ink: #edf4f7; --muted: #b8c6d0; --pico-primary: #8bc7ff; }
 [data-theme="dark"] .eyebrow, [data-theme="dark"] .patient-shortcuts i { color: #8bc7ff; }
@@ -545,12 +566,13 @@ h1, h2, h3 { text-wrap: balance; }
     .header-inner { flex-wrap: wrap; padding: 16px 0; gap: 8px; }
     .site-nav { order: 3; flex-basis: 100%; justify-content: space-between; }
     .theme-control { margin-left: auto; }
-    .team-member-card, .team-profile-panel { grid-template-columns: 1fr; padding: 20px; }
+    .team-member-card { grid-template-columns: 150px minmax(0, 1fr); padding: 20px; }
+    .team-profile-panel { grid-template-columns: 1fr; padding: 20px; }
     .team-member-card .staff-photo-placeholder { grid-row: 1; min-height: 150px; }
     .team-profile-panel .staff-photo-placeholder { min-height: 180px; }
     .doctor-search-panel, .doctor-directory-layout { grid-template-columns: 1fr; }
     .doctor-filter-panel { position: static; }
-    .doctor-card { grid-template-columns: minmax(0, 1fr) 92px; gap: 12px; padding: 14px; }
+    .doctor-card { grid-template-columns: 92px minmax(0, 1fr); gap: 12px; padding: 14px; }
     .doctor-photo-placeholder { min-height: 120px; padding: 10px; }
     .doctor-photo-placeholder span { font-size: 0.75rem; }
     .doctor-card-actions { flex-direction: column; align-items: stretch; }
@@ -621,6 +643,9 @@ h1, h2, h3 { text-wrap: balance; }
     .footer-contact { max-width: 320px; }
     .footer-bottom { align-items: stretch; flex-direction: column; }
     .footer-bottom .social-links { order: 1; align-self: flex-end; justify-content: flex-end; gap: 12px; }
+    .footer-insurance-logo { width: 105px; height: 56px; flex-basis: 105px; }
+    .footer-insurance-logo img { max-height: 42px; }
+    .footer-insurance-set { gap: 18px; padding-right: 18px; }
 }
 
     /* Shared cards for repeated clinic information */
@@ -658,6 +683,9 @@ h1, h2, h3 { text-wrap: balance; }
 .utility-bar a:hover { text-decoration: underline; }
 .site-footer { border: 0; background: var(--clinic-blue); color: #fff; }
 .site-footer h2, .site-footer p, .site-footer span, .site-footer a, .site-footer a:first-child, .site-footer a:last-child { color: #fff; }
+.footer-insurance-logo { background: #fff; }
+.footer-insurance-logo img { color: #182230; }
+.footer-insurance-toggle { border-color: rgb(255 255 255 / 45%); color: #fff; }
 .footer-brand p { color: #fff; }
 .footer-contact > a span { color: #fff; }
 .footer-bottom { border-color: rgb(255 255 255 / 28%); }
@@ -690,8 +718,8 @@ h1, h2, h3 { text-wrap: balance; }
 .insurance-intro p:last-child { max-width: 70ch; margin: 0; color: var(--muted); }
 .insurance-directory { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 32px; }
 .insurance-card { padding: 22px; border: 1px solid var(--line); background: var(--surface); }
-.insurance-card > i { color: var(--brand-link); font-size: 1.5rem; }
-.insurance-card h3 { margin: 12px 0 6px; font-size: 1.15rem; }
+.insurance-card-logo { display: block; width: 100%; height: 76px; margin-bottom: 14px; object-fit: contain; object-position: left center; }
+.insurance-card h3 { margin: 0 0 6px; font-size: 1.15rem; }
 .insurance-card p { margin: 0; color: var(--muted); font-size: 0.92rem; }
 .insurance-guidance { padding: 26px; border: 1px solid var(--line); background: var(--surface-soft); }
 .insurance-guidance h2 { margin: 0 0 12px; font-family: "DM Serif Display", Georgia, serif; font-size: 1.7rem; font-weight: 400; }
@@ -846,6 +874,10 @@ h1, h2, h3 { text-wrap: balance; }
 .staff-filter-bar input { min-width: 240px; }
 .staff-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
 .staff-form { display: flex; flex-direction: column; gap: 14px; }
+.staff-time-presets-label { margin: 8px 0 6px; color: var(--muted); font-size: 0.88rem; }
+.staff-time-presets { display: flex; flex-wrap: wrap; gap: 8px; }
+.staff-time-preset { width: auto; min-height: 36px; margin: 0; padding: 6px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface-soft); color: var(--brand-link); font-size: 0.84rem; }
+.staff-time-preset:hover, .staff-time-preset:focus-visible { border-color: var(--brand-link); background: var(--surface); }
 .staff-form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
 .staff-checkbox-list ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 14px; margin: 6px 0 0; padding: 0; list-style: none; }
 .staff-checkbox-list li label { display: flex; align-items: center; gap: 8px; font-size: 0.92rem; margin: 0; }
@@ -877,4 +909,9 @@ h1, h2, h3 { text-wrap: balance; }
     .service-reference-group:last-child { grid-column: auto; }
     .branch-card { padding: 24px; }
     .booking-form { padding: 22px; }
+}
+@media (max-width: 480px) {
+    .doctor-card { grid-template-columns: 76px minmax(0, 1fr); gap: 10px; padding: 12px; }
+    .doctor-photo-placeholder { min-height: 120px; padding: 8px; }
+    .doctor-photo-placeholder span { font-size: 0.72rem; }
 }

@@ -23,8 +23,8 @@
 <section class="insurance-directory" aria-label="Listed insurance providers">
   {% for insurer in insurers %}
   <article class="insurance-card">
-    <i class="bi bi-building-check" aria-hidden="true"></i>
-    <h3>{{ insurer }}</h3>
+    <img class="insurance-card-logo" src="{% static insurer.logo %}" alt="{{ insurer.name }} logo" />
+    <h3>{{ insurer.name }}</h3>
     <p>Contact your insurer to confirm your plan's benefits and requirements.</p>
   </article>
   {% endfor %}

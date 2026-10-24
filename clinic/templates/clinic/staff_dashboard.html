@@ -95,8 +95,7 @@
           <th>Date &amp; Time</th>
           <th>Patient</th>
           <th>Contact</th>
-          <th>Location</th>
-          <th>Specialty</th>
+          <th>Branch</th>
           <th>Service</th>
           <th>Reference</th>
           <th>Status</th>
@@ -111,15 +110,8 @@
           <td>
             <a href="tel:{{ appt.phone }}">{{ appt.phone }}</a><br />
             <a href="mailto:{{ appt.email }}">{{ appt.email }}</a>
-            {% if appt.notes %}
-            <details class="appointment-notes">
-              <summary>Additional notes</summary>
-              <p>{{ appt.notes }}</p>
-            </details>
-            {% endif %}
           </td>
-          <td>{{ appt.get_branch_display|default:"Not specified" }}</td>
-          <td>{{ appt.specialty|default:"Not specified" }}</td>
+          <td>{{ appt.get_branch_display }}</td>
           <td>{{ appt.slot.service.name }}</td>
           <td><code>{{ appt.reference|truncatechars:12 }}</code></td>
           <td>
@@ -168,6 +160,14 @@
         <div class="booking-field">
           <label for="{{ slot_form.start_time.id_for_label }}">{{ slot_form.start_time.label }}</label>
           {{ slot_form.start_time }} {{ slot_form.start_time.errors }}
+          <p class="staff-time-presets-label">Quick-pick a common time or enter a custom time:</p>
+          <div class="staff-time-presets" role="group" aria-label="Common appointment times">
+            <button type="button" class="staff-time-preset" data-start-time="09:30">9:30 AM</button>
+            <button type="button" class="staff-time-preset" data-start-time="10:30">10:30 AM</button>
+            <button type="button" class="staff-time-preset" data-start-time="11:30">11:30 AM</button>
+            <button type="button" class="staff-time-preset" data-start-time="14:30">2:30 PM</button>
+            <button type="button" class="staff-time-preset" data-start-time="15:00">3:00 PM</button>
+          </div>
         </div>
         <div class="booking-field">
           <label for="{{ slot_form.duration_minutes.id_for_label }}">{{ slot_form.duration_minutes.label }}</label>
@@ -184,10 +184,6 @@
   <section class="staff-panel" aria-labelledby="bulk-slot-title">
     <p class="eyebrow">SCHEDULE GENERATOR</p>
     <h2 id="bulk-slot-title">Generate Upcoming Slots</h2>
-    <p class="verification-copy">
-      Public appointment times are scheduled at 9:00 AM, 10:30 AM, 12:00 PM,
-      2:00 PM, and 3:30 PM within the selected daily range.
-    </p>
     <form class="staff-form" method="post">
       {% csrf_token %}
       <input type="hidden" name="action" value="bulk_generate" />

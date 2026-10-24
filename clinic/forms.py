@@ -7,16 +7,6 @@ from django.utils import timezone
 from clinic.content import BRANCHES, SPECIALTY_FILTERS
 from clinic.models import Appointment, AppointmentSlot, Service
 
-APPOINTMENT_TIMES = ("09:00", "10:30", "12:00", "14:00", "15:30")
-APPOINTMENT_TIME_CHOICES = (
-    ("09:00", "9:00 AM"),
-    ("10:30", "10:30 AM"),
-    ("12:00", "12:00 PM"),
-    ("14:00", "2:00 PM"),
-    ("15:30", "3:30 PM"),
-)
-
-
 class AppointmentSlotSelect(forms.Select):
     def __init__(self, slot_metadata: dict[str, dict[str, str]], *args, **kwargs):
         self.slot_metadata = slot_metadata
@@ -125,12 +115,7 @@ class AppointmentForm(forms.Form):
             .exclude(appointments__status=Appointment.Status.CONFIRMED)
             .order_by("starts_at")
         )
-        slots = [
-            slot
-            for slot in available_slots
-            if timezone.localtime(slot.starts_at).strftime("%H:%M")
-            in APPOINTMENT_TIMES
-        ]
+        slots = available_slots
         self.fields["service"].queryset = services
         self.fields["slot"].queryset = AppointmentSlot.objects.filter(
             pk__in=[slot.pk for slot in slots]
@@ -181,7 +166,7 @@ class StaffSlotForm(forms.Form):
     )
     start_time = forms.TimeField(
         label="Start time",
-        widget=forms.Select(choices=APPOINTMENT_TIME_CHOICES),
+        widget=forms.TimeInput(attrs={"type": "time", "step": "60"}),
     )
     duration_minutes = forms.ChoiceField(
         label="Duration",

@@ -5,7 +5,16 @@ PUBLIC_FACTS = {
     "mailto": "mailto:help@karisclinic.com",
 }
 
-INSURERS = ["Britam", "AAR", "APA", "Sanlam", "Prudential"]
+INSURERS = [
+    {"name": "Britam", "logo": "clinic/images/karis medical images/britam.webp"},
+    {"name": "AAR", "logo": "clinic/images/karis medical images/aar.png"},
+    {"name": "APA", "logo": "clinic/images/karis medical images/apa.png"},
+    {"name": "Sanlam", "logo": "clinic/images/karis medical images/sanlam.png"},
+    {
+        "name": "Prudential",
+        "logo": "clinic/images/karis medical images/prudential.png",
+    },
+]
 
 BRANCHES = [
     {
@@ -279,8 +288,8 @@ SERVICE_GROUPS = [
     },
     {
         "title": "Tests and Diagnostics",
-        "image": "clinic/images/karis medical images/5ce80a1d-b099-41ce-adb3-3cd18e7cf968.png",
-        "image_alt": "A doctor talking with a patient at a clinic",
+        "image": "clinic/images/karis medical images/laboratory.webp",
+        "image_alt": "Laboratory equipment used for diagnostic testing",
         "items": [
             {
                 "title": "Laboratory services",
@@ -336,8 +345,8 @@ SERVICE_GROUPS = [
     },
     {
         "title": "Emergency and Urgent Care",
-        "image": "clinic/images/karis medical images/Welcoming Medical Clinic Reception and Consultation.png",
-        "image_alt": "A patient speaking with a doctor in a clinic",
+        "image": "clinic/images/karis medical images/ambulance.webp",
+        "image_alt": "An ambulance for emergency transport",
         "items": [
             {
                 "title": "Emergency department",
