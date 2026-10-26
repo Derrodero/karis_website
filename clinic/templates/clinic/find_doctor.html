@@ -5,7 +5,7 @@
   <p class="eyebrow">KARIS MEDICAL · KAMPALA</p>
   <h1>Find a doctor</h1>
   <p class="page-lede">
-    Search by a doctor's name, specialty, role, or branch. Staff names, photos,
+    Search by a doctor's name, specialty, role, or branch. Staff names,
     credentials, and branch schedules will appear once confirmed by the clinic.
   </p>
 </header>
@@ -62,7 +62,8 @@
     </header>
     <p class="doctor-directory-notice">
       Profiles below are placeholders; they do not identify confirmed staff or
-      indicate confirmed service availability.
+      indicate confirmed service availability. Photos are illustrative and do
+      not identify Karis Medical staff.
     </p>
     <div class="doctor-card-list">
       {% for doctor in doctors %}
@@ -96,6 +97,14 @@
             </a>
           </div>
         </div>
+        {% if doctor.photo %}
+        <img
+          class="doctor-card-photo"
+          src="{% static doctor.photo %}"
+          alt="Illustrative doctor portrait; not a confirmed Karis Medical staff member"
+          loading="lazy"
+        />
+        {% else %}
         <div
           class="staff-photo-placeholder doctor-photo-placeholder"
           role="img"
@@ -104,6 +113,7 @@
           <i class="bi bi-person" aria-hidden="true"></i>
           <span>Photo pending</span>
         </div>
+        {% endif %}
       </article>
       {% endfor %}
     </div>

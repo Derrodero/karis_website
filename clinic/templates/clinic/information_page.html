@@ -1,9 +1,36 @@
 {% extends "clinic/base.html" %} {% load static %} {% block content %}
+{% if page_key == "services" %}
+<header class="page-heading page-heading--services" id="services-hero">
+  <div class="services-hero-content">
+    <p class="eyebrow">KARIS MEDICAL · UGANDA</p>
+    <h1>{{ page.title }}</h1>
+    <p class="page-lede">{{ page.intro }}</p>
+    <h2>For you. For your family.</h2>
+    <p class="services-hero-description">
+      Explore care from general consultations and diagnostics to maternity and
+      child health.
+    </p>
+    <div class="services-hero-actions">
+      <a class="button-primary" href="#confirmed-services">
+        Explore services <i class="bi bi-arrow-down" aria-hidden="true"></i>
+      </a>
+      <a class="services-hero-contact" href="{% url 'contact' %}">
+        Discuss your visit <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+    <div class="services-hero-highlights" aria-label="Clinic information">
+      <span><i class="bi bi-clock" aria-hidden="true"></i> Open 24 hours</span>
+      <span><i class="bi bi-geo-alt" aria-hidden="true"></i> Two Kampala branches</span>
+    </div>
+  </div>
+</header>
+{% else %}
 <header class="page-heading">
   <p class="eyebrow">KARIS MEDICAL · UGANDA</p>
   <h1>{{ page.title }}</h1>
   <p class="page-lede">{{ page.intro }}</p>
 </header>
+{% endif %}
 
 {% if page_key == "insurance" %}
 <section class="insurance-intro" aria-labelledby="insurance-directory-title">
@@ -182,26 +209,6 @@
   </section>
 </div>
 {% endif %} {% if page_key == "services" %}
-<section class="care-feature" aria-labelledby="family-care-title">
-  <div>
-    <p class="eyebrow">CARE CLOSE TO HOME</p>
-    <h2 id="family-care-title">For you.<br />For your family.</h2>
-    <p>
-      Explore our services below, from general consultations and diagnostics to
-      maternity and child health.
-    </p>
-    <a class="text-link" href="{% url 'contact' %}"
-      >Discuss your visit <i class="bi bi-arrow-right" aria-hidden="true"></i
-    ></a>
-  </div>
-  <img
-    src="{% static 'clinic/images/karis medical images/pediatrician-doctor.jpg' %}"
-    alt="A mother and child talking with a doctor"
-    width="626"
-    height="423"
-    fetchpriority="high"
-  />
-</section>
 <nav class="services-section-nav" aria-label="Services page sections">
   <a href="#confirmed-services">
     <span class="services-nav-index">01</span>

@@ -1,4 +1,5 @@
 {% extends "clinic/base.html" %}
+{% load static %}
 {% block content %}
 <header class="page-heading">
   <p class="eyebrow">MEDICAL TEAM AND LEADERSHIP</p>
@@ -8,7 +9,7 @@
 
 <section class="team-directory" aria-label="Founder and executive team">
   {% for member in team_members %}
-  <article class="team-member-card">
+  <article class="team-member-card{% if forloop.first %} team-member-card--founder{% endif %}">
     <div class="team-member-copy">
       <p class="eyebrow">
         {% if forloop.first %}FOUNDING LEADERSHIP{% else %}EXECUTIVE TEAM{% endif %}
@@ -20,12 +21,11 @@
         <a class="button-secondary" href="{{ member.profile_url }}">
           <i class="bi bi-person-vcard" aria-hidden="true"></i> View profile
         </a>
-        <a class="button-primary" href="{% url 'appointments' %}#service-booking">
-          <i class="bi bi-calendar2-check" aria-hidden="true"></i>
-          Request appointment
-        </a>
       </div>
     </div>
+    {% if member.photo %}
+    <img class="team-member-photo{% if forloop.first %} team-member-photo--founder{% endif %}" src="{% static member.photo %}" alt="{{ member.name }}" />
+    {% else %}
     <div
       class="staff-photo-placeholder"
       role="img"
@@ -34,6 +34,7 @@
       <i class="bi bi-person" aria-hidden="true"></i>
       <span>Photo pending confirmation</span>
     </div>
+    {% endif %}
   </article>
   {% endfor %}
 </section>

@@ -1,4 +1,5 @@
 {% extends "clinic/base.html" %}
+{% load static %}
 {% block content %}
 <header class="page-heading">
   <p class="eyebrow">FOUNDER AND EXECUTIVE TEAM</p>
@@ -7,6 +8,13 @@
 </header>
 
 <section class="team-profile-panel" aria-label="Team member profile">
+  {% if team_member.photo %}
+  <img
+    class="team-member-photo team-member-photo--profile"
+    src="{% static team_member.photo %}"
+    alt="{{ team_member.name }}"
+  />
+  {% else %}
   <div
     class="staff-photo-placeholder staff-photo-placeholder--profile"
     role="img"
@@ -15,6 +23,7 @@
     <i class="bi bi-person" aria-hidden="true"></i>
     <span>Photo pending confirmation</span>
   </div>
+  {% endif %}
   <div>
     <p class="eyebrow">POSITION</p>
     <h2>{{ team_member.position }}</h2>
@@ -24,10 +33,6 @@
       verification by Karis Medical.
     </p>
     <div class="team-member-actions">
-      <a class="button-primary" href="{% url 'appointments' %}#service-booking">
-        <i class="bi bi-calendar2-check" aria-hidden="true"></i>
-        Request appointment
-      </a>
       <a class="button-secondary" href="{% url 'about_detail' 'medical-team' %}">
         Back to executive team
       </a>

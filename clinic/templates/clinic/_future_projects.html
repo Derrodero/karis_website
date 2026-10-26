@@ -1,7 +1,7 @@
 {% load static %}
 <div class="project-grid">
   {% for project in project_section.projects %}
-  <article class="project-card">
+  <article class="project-card{% if forloop.first %} project-card--hospital{% endif %}">
     <div class="project-card-heading">
       <i class="bi {{ project.icon }}" aria-hidden="true"></i>
       <div>
@@ -10,7 +10,7 @@
       </div>
     </div>
     <p class="project-description">{{ project.description }}</p>
-    <div class="project-image-grid">
+    <div class="project-image-grid{% if forloop.first %} project-image-grid--hospital{% endif %}">
       {% for image in project.images %}
       <figure class="project-image">
         <img src="{% static image.src %}" alt="{{ image.alt }}" loading="lazy" />

@@ -207,6 +207,7 @@ FOUNDER = {
     "slug": "founder",
     "name": "AGABA ANDY CHRISTIAN",
     "position": "Founder",
+    "photo": "clinic/images/karis medical images/andy+agaba founder.webp",
     "description": (
         "Founder of Karis Medical. Further responsibilities and biographical "
         "details will be added after confirmation."
@@ -249,11 +250,31 @@ SPECIALTY_FILTERS = [
     ("immunisation", "Immunisation"),
 ]
 
+DOCTOR_PHOTOS = [
+    "clinic/images/karis medical images/Dr1.jpg",
+    "clinic/images/karis medical images/Dr2.jpeg",
+    "clinic/images/karis medical images/Dr3.jpg",
+    "clinic/images/karis medical images/Dr4.jpg",
+    "clinic/images/karis medical images/Dr5.jpg",
+    "clinic/images/karis medical images/Dr5.webp",
+    "clinic/images/karis medical images/Dr6.jpg",
+    "clinic/images/karis medical images/Dr7.webp",
+    "clinic/images/karis medical images/Dr8.jpg",
+    "clinic/images/karis medical images/Fedr1.webp",
+    "clinic/images/karis medical images/fedr2.jpg",
+    "clinic/images/karis medical images/fedr3.jpg",
+    "clinic/images/karis medical images/fedr4.jpg",
+    "clinic/images/karis medical images/fedr5.jpg",
+    "clinic/images/karis medical images/fedr6.jpg",
+    "clinic/images/karis medical images/femaleDr.jpg",
+]
+
 DOCTOR_PROFILES = [
     {
         "slug": f"specialist-profile-{number:02d}",
         "name": f"Name awaiting confirmation {number:02d}",
         "position": "Position awaiting confirmation",
+        "photo": DOCTOR_PHOTOS[number - 1] if number <= len(DOCTOR_PHOTOS) else None,
         "specialty_key": specialty_key,
         "specialty": specialty,
         "branch_key": "pending",

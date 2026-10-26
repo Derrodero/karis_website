@@ -232,6 +232,8 @@ def test_about_subsection_links_open_dedicated_pages(client, slug, title, detail
         assert b"Multi-Story%20Building%20Under%20Construction.png" in response.content
         assert b"Hospitalfinised%20view.jpg" in response.content
         assert b"Nursingschoolsite.jpg" in response.content
+        assert b"project-card--hospital" in response.content
+        assert b"project-image-grid--hospital" in response.content
     else:
         assert b"Information awaiting confirmation" in response.content
     assert b'href="/about"' in response.content
@@ -253,13 +255,34 @@ def test_founder_and_executive_team_page_uses_verified_profile_placeholders(clie
     assert response.status_code == 200
     assert b"AGABA ANDY CHRISTIAN" in response.content
     assert b"Founder of Karis Medical." in response.content
-    assert response.content.count(b'class="team-member-card"') == 5
+    assert response.content.count(b'class="team-member-card') == 5
+    assert b'team-member-card team-member-card--founder' in response.content
+    assert b'team-member-photo team-member-photo--founder' in response.content
     assert response.content.count(b"View profile") == 5
+    assert b'andy%2Bagaba%20founder.webp" alt="AGABA ANDY CHRISTIAN"' in response.content
     team_section = response.content.split(
         b'aria-label="Founder and executive team"', 1
     )[1].split(b"</section>", 1)[0]
-    assert team_section.count(b"Request appointment") == 5
+    assert b"Request appointment" not in team_section
     assert b"Photo pending confirmation" in response.content
+
+    founder_response = client.get(reverse("about_detail", args=["founder"]))
+    assert founder_response.status_code == 200
+    assert b"andy%2Bagaba%20founder.webp" in founder_response.content
+    assert b'alt="AGABA ANDY CHRISTIAN"' in founder_response.content
+    founder_profile = founder_response.content.split(
+        b'aria-label="Team member profile"', 1
+    )[1].split(b"</section>", 1)[0]
+    assert b"Request appointment" not in founder_profile
+
+    executive_response = client.get(
+        reverse("about_detail", args=["executive-member-1"])
+    )
+    assert executive_response.status_code == 200
+    executive_profile = executive_response.content.split(
+        b'aria-label="Team member profile"', 1
+    )[1].split(b"</section>", 1)[0]
+    assert b"Request appointment" not in executive_profile
 
 
 def test_find_doctor_page_renders_twenty_filterable_profile_cards(client):
@@ -267,6 +290,8 @@ def test_find_doctor_page_renders_twenty_filterable_profile_cards(client):
 
     assert response.status_code == 200
     assert response.content.count(b'data-doctor-card') == 20
+    assert response.content.count(b'class="doctor-card-photo"') == 16
+    assert response.content.count(b'class="staff-photo-placeholder doctor-photo-placeholder"') == 4
     assert response.content.count(b'data-specialty-filter') == 20
     assert b'data-doctor-search' in response.content
     assert b'data-doctor-branch' in response.content
@@ -276,6 +301,9 @@ def test_find_doctor_page_renders_twenty_filterable_profile_cards(client):
     assert b"Emergency care" in response.content
     assert b"Pharmacy" in response.content
     assert b"Profiles below are placeholders" in response.content
+    assert b"Photos are illustrative" in response.content
+    assert b"clinic/images/karis%20medical%20images/Dr1.jpg" in response.content
+    assert b"clinic/images/karis%20medical%20images/femaleDr.jpg" in response.content
     assert b"doctor-directory.js" in response.content
 
 
@@ -289,6 +317,8 @@ def test_team_and_doctor_profile_links_resolve(client):
     assert b"AGABA ANDY CHRISTIAN" in team_response.content
     assert doctor_response.status_code == 200
     assert b"General practice" in doctor_response.content
+    assert b"clinic/images/karis%20medical%20images/Dr1.jpg" in doctor_response.content
+    assert b"Illustrative doctor portrait" in doctor_response.content
     assert b"PROFILE PENDING CONFIRMATION" in doctor_response.content
 
 
@@ -654,6 +684,10 @@ def test_home_and_contact_publish_branches_and_icon_links(client):
 def test_services_page_lists_the_three_clinic_services(client):
     response = client.get(reverse("services"))
 
+    assert b'id="services-hero"' in response.content
+    assert b"For you. For your family." in response.content
+    assert b'href="#confirmed-services"' in response.content
+    assert b'href="/contact"' in response.content
     assert b"Service directory" in response.content
     assert b'class="service-accordion"' in response.content
     assert b"Diagnostics and pharmacy" in response.content
