@@ -994,3 +994,22 @@ h1, h2, h3 { text-wrap: balance; }
     .services-section-nav a { min-height: 56px; flex-direction: row; }
     .services-section-nav a + a { border-top: 1px solid var(--line); border-left: 0; }
 }
+@media (max-width: 720px) {
+    .doctor-search-panel { grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 18px; }
+    .doctor-search-panel label, .doctor-search-panel input, .doctor-search-panel select { min-width: 0; width: 100%; }
+    .doctor-directory-layout { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .doctor-filter-panel { position: static; }
+    .doctor-filter-panel, .doctor-results-panel { padding: 18px; }
+    .doctor-results-heading { align-items: flex-start; flex-direction: column; gap: 8px; }
+    .doctor-card { grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 14px; }
+    .doctor-card-copy { grid-column: 1; grid-row: 2; min-width: 0; }
+    .doctor-photo-placeholder, .doctor-card-photo { grid-column: 1; grid-row: 1; width: 100%; height: clamp(180px, 55vw, 240px); }
+    .doctor-photo-placeholder { min-height: 180px; }
+    .doctor-card-copy h3, .doctor-card-copy p { overflow-wrap: anywhere; }
+    .doctor-card-actions { flex-direction: column; align-items: stretch; }
+    .doctor-card-actions .button-primary, .doctor-card-actions .button-secondary { width: 100%; }
+}
+@media (max-width: 360px) {
+    .doctor-search-panel, .doctor-filter-panel, .doctor-results-panel { padding: 14px; }
+    .doctor-card { padding: 12px; }
+}
